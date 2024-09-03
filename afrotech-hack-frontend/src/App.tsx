@@ -3,7 +3,7 @@ import './App.css'
 function App() {
 
   return (
-    <h1>Open Source Wand</h1>
+    <h1 className="text-3xl bg-blue">Open Source Wand</h1>
   )
 }
 
