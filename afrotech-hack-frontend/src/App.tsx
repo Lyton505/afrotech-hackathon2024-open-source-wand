@@ -1,14 +1,13 @@
 import './App.css';
-"use client"
-
-import { z } from "zod"
-
-
+import ProfileForm from './components/usernameForm';
 
 function App() {
+
+
   return (
     <div>
-      <h1 className="text-3xl">Open Source Wand</h1>
+      <h1 className="text-3xl my-10 mx-4 px-4">Open Source Wand</h1>
+      <ProfileForm />
     </div>
   );
 }
