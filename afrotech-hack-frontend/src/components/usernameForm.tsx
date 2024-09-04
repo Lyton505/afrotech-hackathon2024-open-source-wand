@@ -51,7 +51,8 @@ export function ProfileForm() {
                                 <Input placeholder="Github Username" {...field} />
                             </FormControl>
                             <FormDescription>
-                                This is the Github handle name for the user you want to search for.
+                                This is the Github handle name for the user you want to search for e.g
+                                <span className="italic"> torvalds</span>
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
