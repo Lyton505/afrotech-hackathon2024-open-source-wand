@@ -44,8 +44,11 @@ export function ProfileForm() {
         if (process.env.NODE_ENV === 'development') {
             console.log("Running in development mode");
             console.log("Values:", values);
+            setIsLoading(true);
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 2000);
         } else {
-            setIsLoading(true)
             try {
                 const response = await fetch("/profile", {
                     method: "POST",
@@ -83,7 +86,7 @@ export function ProfileForm() {
                         </FormItem>
                     )}
                 />
-                <LoadingButton type="submit">Submit</LoadingButton>
+                {isLoading ? <LoadingButton type="submit">Submitting</LoadingButton> : <Button type="submit">Submit</Button>}
             </form>
         </Form>
     )
