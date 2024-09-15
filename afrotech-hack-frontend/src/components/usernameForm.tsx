@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { LoadingButton } from "./ui/loading_button"
+import { log } from "console"
 
 
 const formSchema = z.object({
@@ -47,7 +48,10 @@ export function ProfileForm() {
             setIsLoading(true);
             setTimeout(() => {
                 setIsLoading(false);
-            }, 2000);
+                console.log("Waiting for 5 seconds");
+                window.location.href = "/loading";
+                console.log("Redirected to loading page");
+            }, 5000);
         } else {
             try {
                 const response = await fetch("/profile", {
@@ -86,7 +90,9 @@ export function ProfileForm() {
                         </FormItem>
                     )}
                 />
-                {isLoading ? <LoadingButton type="submit">Submitting</LoadingButton> : <Button type="submit">Submit</Button>}
+                {isLoading ?
+                    <LoadingButton type="submit" variant="outline" disabled>Checking username</LoadingButton> :
+                    <Button type="submit">Submit</Button>}
             </form>
         </Form>
     )
