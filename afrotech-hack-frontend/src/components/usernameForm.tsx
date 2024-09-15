@@ -15,6 +15,9 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { LoadingButton } from "./ui/loading_button"
+
 
 const formSchema = z.object({
     username: z.string().min(2, {
@@ -32,11 +35,33 @@ export function ProfileForm() {
     })
 
     // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
-        console.log(values)
+        // submit to backend endpoint /profile
+
+        // For development purposes only
+        if (process.env.NODE_ENV === 'development') {
+            console.log("Running in development mode");
+            console.log("Values:", values);
+        } else {
+            setIsLoading(true)
+            try {
+                const response = await fetch("/profile", {
+                    method: "POST",
+                    body: JSON.stringify(values),
+                });
+                const data = await response.json()
+                console.log(data)
+            } catch (error) {
+                console.log("Error fetching profile");
+                console.error(error)
+            }
+        }
+
     }
+
+    const [isLoading, setIsLoading] = useState(false)
 
     return (
         <Form {...form}>
@@ -58,7 +83,7 @@ export function ProfileForm() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <LoadingButton type="submit">Submit</LoadingButton>
             </form>
         </Form>
     )
