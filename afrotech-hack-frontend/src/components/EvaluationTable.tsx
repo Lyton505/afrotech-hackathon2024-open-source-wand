@@ -125,8 +125,8 @@ export default function EvaluationTable() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {evaluationMock.map((evaluation) => (
-                    <><TableRow className="hover:bg-gray-100 text-left" key={evaluation.metric}>
+                {evaluationMock.map((evaluation, index) => (
+                    <><TableRow key={index+1} className="hover:bg-gray-100 text-left" >
 
 
                         {/* <Table>
