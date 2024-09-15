@@ -1,20 +1,25 @@
 import './App.css';
-import ProfileForm from './components/usernameForm';
-import wand from './assets/magic-wand.svg';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Results from './screens/Results';
+import Welcome from './screens/Welcome';
+import Loading from './screens/Loading';
+import _layout from './screens/_layout';
 
 function App() {
 
 
   return (
-    <div>
-      <h1 className="text-3xl mx-auto">Open Source Wand
-        <img src={wand} alt="wand" className="inline-block h-8 w-8" />
-      </h1>
-      <p className="text-md my-8 mx-4 px-4">
-        Open Source Wand allows you to evaluate a user's contributions to open source projects.
-      </p>
-      <ProfileForm />
-    </div>
+
+    <Router>
+      <Routes>
+        <Route path="/" element={<_layout />}>
+          <Route index element={<Welcome />} />
+          <Route path="home" element={<Welcome />} />
+          <Route path="results" element={<Results />} />
+          <Route path="loading" element={<Loading />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
