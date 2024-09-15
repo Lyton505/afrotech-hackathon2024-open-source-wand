@@ -150,7 +150,7 @@ export default function EvaluationTable() {
                             <TableCell className="text-center text-sm">{criteria.score}</TableCell>
                             <TableCell className="text-center w-1/3 break-words text-xs">
                                 <div className="flex flex-col gap-2">
-                                    <p className="text-xs bg-gray-100 p-2 rounded-md text-left">{criteria.sample}</p>
+                                    <pre className="text-xs bg-gray-100 p-2 rounded-md text-left w-full break-words text-wrap">{criteria.sample}</pre>
                                     <div className="text-xs w-full justify-center flex"><p className="text-center w-fit text-gray-500 cursor-pointer hover:text-gray-800"><a className="underline"  href={criteria.link} target="_blank" rel="noopener noreferrer">View on GitHub</a></p></div>
                                 </div>
                             </TableCell>
