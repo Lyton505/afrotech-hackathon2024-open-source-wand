@@ -3,9 +3,21 @@ import { Octokit, App } from "octokit";
 import getOpenAIScore from "./openai-interface.js";
 dotenv.config();
 
+let commits = [];
+
+/**
+ * Initializes the Octokit instance with the GitHub token.
+ * 
+ * @returns {Octokit} - The Octokit instance.
+ */
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
-/* check if a user exists */
+/**
+ * Checks if a user exists.
+ * 
+ * @param {string} username - The username to check.
+ * @returns {Promise<boolean>} - A promise that resolves to true if the user exists, false otherwise.
+ */
 const checkUser = async function (username) {
   try {
     const response2 = await octokit.rest.users.getByUsername({ username: username });
@@ -27,7 +39,12 @@ const checkUser = async function (username) {
   }
 }
 
-/* get all user repos for username provided */
+/**
+ * Retrieves all repositories for a given username.
+ * 
+ * @param {string} username - The username of the user.
+ * @returns {Promise<Array>} - A promise that resolves to an array of repository objects.
+ */
 const getUserRepos = async function (username) {
   try {
     const repositoryList = await octokit.rest.repos.listForUser({ username: username });
@@ -41,7 +58,12 @@ const getUserRepos = async function (username) {
   }
 }
 
-/* get the largest repo for a user; large as defined by stars + forks */
+/**
+ * Finds the largest repository based on the sum of stars and forks.
+ * 
+ * @param {Array} repoStore - An array of repository objects.
+ * @returns {Object} - The largest repository object.
+ */
 const getLargestRepo = function (repoStore) {
   let largestRepo = null;
   for (const repo of repoStore) {
@@ -57,7 +79,13 @@ const getLargestRepo = function (repoStore) {
 }
 
 
-// iterate through all commits for a repo -- return with most recent
+/**
+ * Creates an iterator for paginating through commits of a repository.
+ * 
+ * @param {string} owner - The owner of the repository.
+ * @param {string} repo - The name of the repository.
+ * @returns {Object} - An iterator for paginating through commits.
+ */
 const iterator = octokit.paginate.iterator('GET /repos/{owner}/{repo}/commits', {
   // todo: use user-provided username and largest repo
   owner: 'Lyton505',
@@ -65,7 +93,6 @@ const iterator = octokit.paginate.iterator('GET /repos/{owner}/{repo}/commits', 
   per_page: 2
 });
 
-let commits = [];
 
 // todo: remove tests 
 const testCommits = async () => {
@@ -85,6 +112,13 @@ const testCommits = async () => {
   }
 };
 
+/**
+ * Compares the commit messages of two commits by scoring them using the OpenAI API.
+ * 
+ * @param {Object} commit1 - The first commit object.
+ * @param {Object} commit2 - The second commit object.
+ * @returns {void}
+ */
 const compareCommitMessages = async (commit1, commit2) => {
   const message1 = commit1.commit.message;
   const message2 = commit2.commit.message;
