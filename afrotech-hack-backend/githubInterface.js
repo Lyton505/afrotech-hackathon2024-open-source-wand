@@ -6,8 +6,6 @@ import getGeminiCommitScore from "./gemini-interface.js";
 
 dotenv.config();
 
-
-
 let commits = [];
 
 /**
@@ -93,8 +91,8 @@ const getLargestRepo = function (repoStore) {
  */
 const iterator = octokit.paginate.iterator('GET /repos/{owner}/{repo}/commits', {
   // todo: use user-provided username and largest repo
-  owner: 'Lyton505',
-  repo: 'Alien-Invasion',
+  owner: 'torvalds',
+  repo: 'linux',
   per_page: 2
 });
 
