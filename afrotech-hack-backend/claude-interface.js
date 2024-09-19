@@ -7,8 +7,6 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-console.log(process.env.ANTHROPIC_API_KEY);
-
 const getClaudeCommitScore = async (commitMessage) => {
     const result = await anthropic.messages.create({
         model: "claude-3-haiku-20240307",
@@ -25,8 +23,10 @@ const getClaudeCommitScore = async (commitMessage) => {
         ],
     });
     
-    console.log(`commit: ${commitMessage} score: ${result.content[0].text}`);
-    return result.content[0].text;
+    const score = result.content[0].text;
+
+
+    return score;
 }
 
 const testClaude = async () => {
@@ -41,6 +41,5 @@ const testClaude = async () => {
     }
 }
 
-testClaude();
 
 export default getClaudeCommitScore;

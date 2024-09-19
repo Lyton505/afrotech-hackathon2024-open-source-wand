@@ -28,8 +28,6 @@ const getOpenAICommitScore = async (commitMessage) => {
 
     const score = completion.choices[0].message.content;
 
-    console.log(`commit: ${commitMessage} score: ${score}`);
-
     return score;
 }
 
@@ -46,6 +44,5 @@ const testCommitScore = async () => {
     }
 }
 
-testCommitScore();
 
 export default getOpenAICommitScore;

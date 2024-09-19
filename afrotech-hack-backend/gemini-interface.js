@@ -12,9 +12,11 @@ const getGeminiCommitScore = async (commitMessage) => {
     const prompt = `You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. You must return a one word response of a score between 0 and 100. 100 means it is a perfect commit message, 0 means it is a bad commit message. The commit message is ${commitMessage}`;
 
     const result = await model.generateContent(prompt);
-    
-    console.log(`commit: ${commitMessage} score: ${result.response.text().trim()}`);
-    return result.response.text().trim();
+
+    const score = result.response.text().trim();
+
+
+    return score;
 }
 
 const testGemini = async () => {
@@ -29,8 +31,5 @@ const testGemini = async () => {
         const score = await getGeminiCommitScore(commitMessage);
     }
 }
-
-testGemini();
-
 
 export default getGeminiCommitScore;
