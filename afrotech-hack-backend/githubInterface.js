@@ -1,7 +1,12 @@
 import dotenv from 'dotenv';
 import { Octokit, App } from "octokit"; 
 import getOpenAIScore from "./openai-interface.js";
+import getClaudeCommitScore from "./claude-interface.js";
+import getGeminiCommitScore from "./gemini-interface.js";
+
 dotenv.config();
+
+
 
 let commits = [];
 
@@ -100,9 +105,13 @@ const testCommits = async () => {
     for await (const response of iterator) {
       // const currentCommit = response.data;
       // commits.push(currentCommit);
+      const commit_msg1 = response.data[0].commit.message;
+      const commit_msg2 = response.data[1].commit.message;
       if (response.data.length > 0) commits.push(response.data[0]);
       if (response.data.length > 1) commits.push(response.data[1]);
-      compareCommitMessages(commits[0], commits[1]);
+      console.log("Commit 1: ", commit_msg1);
+      console.log("Commit 2: ", commit_msg2);
+      compareCommitMessages(commit_msg1, commit_msg2);
 
       // todo: remove break and continue iteration in two's
       break;
@@ -120,12 +129,40 @@ const testCommits = async () => {
  * @returns {void}
  */
 const compareCommitMessages = async (commit1, commit2) => {
-  const message1 = commit1.commit.message;
-  const message2 = commit2.commit.message;
-  const score1 = await getOpenAIScore(message1);
-  const score2 = await getOpenAIScore(message2);
+  const message1 = commit1;
+  const message2 = commit2;
 
-  console.log("The scores are: ", score1, " and ", score2);
+  const scoreStore = [
+    {model: "openai", modelScore1: 0, modelScore2: 0},
+    {model: "claude", modelScore1: 0, modelScore2: 0},
+    {model: "gemini", modelScore1: 0, modelScore2: 0}
+  ];
+
+  const [
+    score1, score2, score3, score4, score5, score6
+  ] = await Promise.all([
+    getOpenAIScore(message1),
+    getOpenAIScore(message2),
+
+    getClaudeCommitScore(message1),
+    getClaudeCommitScore(message2),
+
+    getGeminiCommitScore(message1),
+    getGeminiCommitScore(message2)
+  ]);
+
+  scoreStore[0].modelScore1 = score1;
+  scoreStore[0].modelScore2 = score2;
+
+  scoreStore[1].modelScore1 = score3;
+  scoreStore[1].modelScore2 = score4;
+
+  scoreStore[2].modelScore1 = score5;
+  scoreStore[2].modelScore2 = score6;
+
+  console.log("The scores are: ", scoreStore);
+
+
 }
 
 // todo: remove tests
