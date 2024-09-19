@@ -138,17 +138,19 @@ const compareCommitMessages = async (commit1, commit2) => {
     {model: "gemini", modelScore1: 0, modelScore2: 0}
   ];
 
+  const comparisonPrompt = "You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. You must only return a one word response of a score between 0 and 100. It has to be a number always. 100 means it is a perfect commit message, 0 means it is a bad commit message.";
+
   const [
     score1, score2, score3, score4, score5, score6
   ] = await Promise.all([
-    getOpenAIScore(message1),
-    getOpenAIScore(message2),
+    getOpenAIScore(message1, comparisonPrompt),
+    getOpenAIScore(message2, comparisonPrompt),
 
-    getClaudeCommitScore(message1),
-    getClaudeCommitScore(message2),
+    getClaudeCommitScore(message1, comparisonPrompt),
+    getClaudeCommitScore(message2, comparisonPrompt),
 
-    getGeminiCommitScore(message1),
-    getGeminiCommitScore(message2)
+    getGeminiCommitScore(message1, comparisonPrompt),
+    getGeminiCommitScore(message2, comparisonPrompt)
   ]);
 
   scoreStore[0].modelScore1 = score1;
