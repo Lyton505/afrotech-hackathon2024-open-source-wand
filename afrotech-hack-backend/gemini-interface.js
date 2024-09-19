@@ -1,17 +1,21 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import {GoogleGenerativeAI} from '@google/generative-ai';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const model = gemini.getGenerativeModel({model: 'gemini-1.5-flash'});
 
-const getGeminiCommitScore = async (commitMessage) => {
-    
-    const prompt = `You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. You must return a one word response of a score between 0 and 100. 100 means it is a perfect commit message, 0 means it is a bad commit message. The commit message is ${commitMessage}`;
+const getGeminiCommitScore = async (commitMessage, comparisonPrompt) => {
 
-    const result = await model.generateContent(prompt);
+    const model = gemini.getGenerativeModel({
+        model: "gemini-1.5-flash",
+        systemInstruction: comparisonPrompt
+    });
+
+    const prompt = comparisonPrompt;
+
+    const result = await model.generateContent(commitMessage);
 
     const score = result.response.text().trim();
 

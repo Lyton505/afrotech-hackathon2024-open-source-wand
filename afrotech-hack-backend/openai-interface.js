@@ -8,14 +8,12 @@ const openai = new OpenAI({
 });
 
 
-const getOpenAICommitScore = async (commitMessage) => {
+const getOpenAICommitScore = async (commitMessage, comparisonPrompt) => {
     const completion = await openai.chat.completions.create({
         messages: [
             { 
                 role: "system",
-                content: `You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. 
-                You must return a one word response of a score between 0 and 100. 100 means it is a perfect commit message, 0 means it is a bad commit message.
-                ` 
+                content: comparisonPrompt 
             },
             { 
                 role: "user",
