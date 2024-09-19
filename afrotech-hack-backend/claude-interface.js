@@ -11,7 +11,7 @@ const getClaudeCommitScore = async (commitMessage) => {
     const result = await anthropic.messages.create({
         model: "claude-3-haiku-20240307",
         max_tokens: 1024,
-        system: "You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. You must return a one word response of a score between 0 and 100. 100 means it is a perfect commit message, 0 means it is a bad commit message.",
+        system: "You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. You must only return a one word response of a score between 0 and 100. It has to be a number always. 100 means it is a perfect commit message, 0 means it is a bad commit message.",
         messages: [
             { 
                 role: "user",
