@@ -15,10 +15,14 @@ const getGeminiCommitScore = async (commitMessage, comparisonPrompt) => {
 
     const prompt = comparisonPrompt;
 
-    const result = await model.generateContent(commitMessage);
-
-    const score = result.response.text().trim();
-
+    let score;
+    try {
+        const result = await model.generateContent(commitMessage);
+        score = result.response.candidates[0].content.parts[0].text.trim();
+    } catch (err) {
+        console.error("Error generating content. Gemini API error.");
+        score = -1;
+    }
 
     return score;
 }
