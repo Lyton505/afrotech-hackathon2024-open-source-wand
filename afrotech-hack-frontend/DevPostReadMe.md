@@ -19,9 +19,33 @@ categories:
 - **Open Source Standards**: How well does the contributor follow open source standards? We 
   specifically look at the contributor’s ability to write good commit messages.
 
+A user picks a view(recruiter view or contributor view) and the time period for which a contributor will be evaluated. We then obtain the repository that most reflects the contributor, using a formula that gives:
+- 70% weight to their most popular repository(in terms of stars)
+- 20% weight to their largest repository(in terms of number of commits)
+- 10% weight to their most recent repository
+
+Once we pick a repository, we evaluate only commits made by that user in the repository.
+
+
+   
+
 ## How we built it
 
+We built the Open Source Wand using various LLM apis, the Github API, ReactJS for the frontend, and Express for the backend.
+
+Open Source Wand's functioning works in 2 stages: 
+- Preprocessing: data retrieval and cleaning
+- Processing: LLM analysis and evaluation
+
+The 2 stages above apply for all evaluations metrics, albeit implemented differently.
+
+### 1. Open souce standards
+
+We retrieve
+
 ## Challenges we ran into
+
+- 
 
 ## Accomplishments that we're proud of
 
