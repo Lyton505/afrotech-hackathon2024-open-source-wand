@@ -50,36 +50,42 @@ function getLargestRepo(repositories) {
 }
 
 /**
- * Compares the commit messages of two commits and returns their scores.
+ * Compares a list of commit messages and returns their scores.
  *
- * @param {string} message1 - The first commit message.
- * @param {string} message2 - The second commit message.
- * @returns {Promise<Array>} - A promise that resolves to an array containing the scores for the two messages.
+ * @param {Array<string>} messages - An array of commit messages.
+ * @returns {Promise<number>} - A promise that resolves to the average score of the commit messages.
  */
-async function compareCommitMessages(message1, message2) {
-  const comparisonPrompt = "Your detailed scoring criteria here.";
-  const scores = await Promise.all([
-    getOpenAIScore(message1, comparisonPrompt),
-    getOpenAIScore(message2, comparisonPrompt),
-    getClaudeCommitScore(message1, comparisonPrompt),
-    getClaudeCommitScore(message2, comparisonPrompt),
-    getGeminiCommitScore(message1, comparisonPrompt),
-    getGeminiCommitScore(message2, comparisonPrompt)
+async function compareCommitMessages(messages) {
+  const comparisonPrompt = "You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. You must only return a one word response of a score between 0 and 100. If the commit message is null, return a score of 0. It has to be a number always. 100 means it is a perfect commit message, 0 means it is a bad commit message.";
+  
+  // Generate all scoring promises for each message across all scoring models
+  const scoringPromises = messages.flatMap(message => [
+    getOpenAIScore(message, comparisonPrompt),
+    getClaudeCommitScore(message, comparisonPrompt),
+    getGeminiCommitScore(message, comparisonPrompt)
   ]);
+  
+  // Resolve all promises and collect scores
+  let scores = await Promise.all(scoringPromises);
 
+  // Parse Integers from the scores
+  scores = scores.map(score => parseInt(score));
+
+  console.log("Scores: ", scores);
+  
+  // Calculate and return the average score of all messages
   return calculateIterationAverageScore(scores);
 }
 
 /**
  * Calculates the average score for the iteration given scores from multiple models.
  *
- * @param {Array} scores - Array of scores from different models.
- * @returns {Array} - An array containing the average scores.
+ * @param {Array<number>} scores - Array of scores from different models for all messages.
+ * @returns {number} - The average score of all evaluated commit messages.
  */
 function calculateIterationAverageScore(scores) {
-  const weightedScores = scores.map((score, i) => score * (3 - i % 3));
-  const avgScore = weightedScores.reduce((acc, score) => acc + score, 0) / scores.length;
-  return Math.round(avgScore);
+  const totalScore = scores.reduce((acc, score) => acc + score, 0);
+  return Math.round(totalScore / scores.length);
 }
 
 /**
@@ -93,21 +99,23 @@ async function evaluateCommits(username, octokit) {
   const repo = await getUserLargestRepo(username, octokit);
   if (!repo) return 0;
 
-  const iterator = octokit.paginate.iterator(octokit.rest.repos.listCommits, {
+  const commitIterator = octokit.paginate.iterator(octokit.rest.repos.listCommits, {
     owner: username,
     repo: repo.name,
-    per_page: 100
+    per_page: 100  // Adjust the per_page value based on the typical commit volume and memory considerations
   });
 
-  let scores = [];
-  for await (const { data: commits } of iterator) {
-    for (let i = 0; i < commits.length - 1; i += 2) {
-      const score = await compareCommitMessages(commits[i].commit.message, commits[i + 1].commit.message);
-      scores.push(score);
-    }
+  let allMessages = [];
+  for await (const { data: commits } of commitIterator) {
+    allMessages.push(...commits.map(commit => commit.commit.message));
   }
 
-  return calculateFinalAverage(scores);
+  if (allMessages.length === 0) return 0;  // Return 0 if no commit messages are found
+
+  // You might choose to process all messages at once or in chunks if the array is too large
+  const finalScore = await compareCommitMessages(allMessages);
+
+  return finalScore;
 }
 
 /**
@@ -123,11 +131,30 @@ function calculateFinalAverage(scores) {
 
 
 // Test Code for each method
+// checkUser
 const isUser1 = await checkUser("Kaleab-A", octokit);
 const isUser2 = await checkUser("asdasjkdjnaskdjnaskjdnaksjn", octokit);
 
 console.assert(isUser1 === true, "Test failed: isUser1");
 console.assert(isUser2 === false, "Test failed: isUser2");
+
+// getUserLargestRepo
+const repo = await getUserLargestRepo("Kaleab-A", octokit);
+console.assert(repo !== null, "Test failed: repo");
+
+// getLargestRepo
+
+// compareCommitMessages
+const messages = [
+  "Fixes a bug in the login page that was causing the user to be logged out.",
+  "Updated the login page to fix a bug.",
+  "This is a test commit message.",
+  "Fix: Changed node version to 18.16.0 to fix a bug in custom hooks.",
+];
+const score = await compareCommitMessages(messages);
+console.log("Score: ", score);
+console.assert(!isNaN(score), "Test failed: score is Nan");
+
 
 
 
