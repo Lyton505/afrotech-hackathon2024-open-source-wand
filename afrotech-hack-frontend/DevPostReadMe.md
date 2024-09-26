@@ -1,0 +1,54 @@
+## Inspiration
+When applying for internship or jobs, only your past experience is typically considered. Your personal projects may also be considered, but only when they are unique and impactful or creative. Open source contributions are often left out of the mix in all these considerations. We believe this should not be the case because open source contributions are a key indicator of a skilled and collaborative developer. 
+
+Open source projects are the most accessible form of collaborative project-based work, yet 
+contributions to open source projects are often neglected. Having seen over 1,000 Black and 
+Latinx students contribute to projects like 
+[oyster](https://github.com/colorstackorg/oyster), we want to see their efforts recognized and rewarded. This is 
+where The Open Source Wand comes in: it highlights your technical talent in open source 
+development. 
+
+## What it does
+The Open Source Wand highlights the strengths of a contributor across five different 
+categories:
+- **Code Quality**: How well does the contributor write code?
+- **Code Style**: How well does the contributor follow well known style guides and style 
+  conventions?
+- **Code Impact**: How impactful are the contributor’s contributions? How popular is the 
+  project they contributed to?
+- **Open Source Standards**: How well does the contributor follow open source standards? We 
+  specifically look at the contributor’s ability to write good commit messages.
+
+A user picks a view(recruiter view or contributor view) and the time period for which a contributor will be evaluated. We then obtain the repository that most reflects the contributor, using a formula that gives:
+- 70% weight to their most popular repository(in terms of stars)
+- 20% weight to their largest repository(in terms of number of commits)
+- 10% weight to their most recent repository
+
+Once we pick a repository, we evaluate only commits made by that user in the repository.
+
+
+   
+
+## How we built it
+
+We built the Open Source Wand using various LLM apis, the Github API, ReactJS for the frontend, and Express for the backend.
+
+Open Source Wand's functioning works in 2 stages: 
+- Preprocessing: data retrieval and cleaning
+- Processing: LLM analysis and evaluation
+
+The 2 stages above apply for all evaluations metrics, albeit implemented differently.
+
+### 1. Open souce standards
+
+We retrieve
+
+## Challenges we ran into
+
+- 
+
+## Accomplishments that we're proud of
+
+## What we learned
+
+## What's next for Open Source Wand
