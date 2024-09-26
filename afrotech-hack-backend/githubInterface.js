@@ -19,6 +19,6 @@ const githubInterface = async () => {
   console.log("Final score from evaluateCommits: ", finalScore);
 };
 
-githubInterface();
+// githubInterface();
 
-export default githubInterface;
+export { octokit };
