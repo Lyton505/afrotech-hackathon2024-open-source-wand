@@ -2,52 +2,9 @@ import dotenv from "dotenv";
 import getOpenAIScore from "./openai-interface.js";
 import getClaudeCommitScore from "./claude-interface.js";
 import getGeminiCommitScore from "./gemini-interface.js";
-import { octokit } from "./githubInterface.js";
+import { octokit, checkUser, getUserLargestRepo } from "./githubInterface.js";
 
 dotenv.config();
-
-/**
- * Checks if a user exists.
- *
- * @param {string} username - The username to check.
- * @param {Object} octokit - Octokit instance for making API calls.
- * @returns {Promise<boolean>} - A promise that resolves to true if the user exists, false otherwise.
- */
-async function checkUser(username, octokit) {
-  try {
-    await octokit.rest.users.getByUsername({ username });
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
-
-/**
- * Retrieves all repositories for a given username and returns the largest.
- *
- * @param {string} username - The username of the user.
- * @param {Object} octokit - Octokit instance for making API calls.
- * @returns {Promise<Object>} - A promise that resolves to the largest repository object.
- */
-async function getUserLargestRepo(username, octokit) {
-  const repos = await octokit.rest.repos.listForUser({ username });
-  return getLargestRepo(repos.data);
-}
-
-/**
- * Finds the largest repository based on the sum of stars and forks.
- *
- * @param {Array} repositories - An array of repository objects.
- * @returns {Object} - The largest repository object.
- */
-function getLargestRepo(repositories) {
-  return repositories.reduce((largest, repo) => {
-    if (!largest || repo.stargazers_count + repo.forks_count > largest.stargazers_count + largest.forks_count) {
-      return repo;
-    }
-    return largest;
-  }, null);
-}
 
 /**
  * Compares a list of commit messages and returns their scores.
@@ -97,12 +54,13 @@ function calculateIterationAverageScore(scores) {
  */
 async function evaluateCommits(username, octokit) {
   const repo = await getUserLargestRepo(username, octokit);
+  console.log("Repo: ", repo);
   if (!repo) return 0;
 
   const commitIterator = octokit.paginate.iterator(octokit.rest.repos.listCommits, {
     owner: username,
     repo: repo.name,
-    per_page: 100  // Adjust the per_page value based on the typical commit volume and memory considerations
+    per_page: 5
   });
 
   let allMessages = [];
@@ -111,6 +69,8 @@ async function evaluateCommits(username, octokit) {
   }
 
   if (allMessages.length === 0) return 0;  // Return 0 if no commit messages are found
+
+  console.log("All Messages: ", allMessages);
 
   // You might choose to process all messages at once or in chunks if the array is too large
   const finalScore = await compareCommitMessages(allMessages);
@@ -131,31 +91,34 @@ function calculateFinalAverage(scores) {
 
 
 // Test Code for each method
-// checkUser
-const isUser1 = await checkUser("Kaleab-A", octokit);
-const isUser2 = await checkUser("asdasjkdjnaskdjnaskjdnaksjn", octokit);
+// // checkUser
+// const isUser1 = await checkUser("Kaleab-A", octokit);
+// const isUser2 = await checkUser("asdasjkdjnaskdjnaskjdnaksjn", octokit);
 
-console.assert(isUser1 === true, "Test failed: isUser1");
-console.assert(isUser2 === false, "Test failed: isUser2");
+// console.assert(isUser1 === true, "Test failed: isUser1");
+// console.assert(isUser2 === false, "Test failed: isUser2");
 
-// getUserLargestRepo
-const repo = await getUserLargestRepo("Kaleab-A", octokit);
-console.assert(repo !== null, "Test failed: repo");
+// // getUserLargestRepo
+// const repo = await getUserLargestRepo("Kaleab-A", octokit);
+// console.assert(repo !== null, "Test failed: repo");
 
-// getLargestRepo
+// // getLargestRepo
 
-// compareCommitMessages
-const messages = [
-  "Fixes a bug in the login page that was causing the user to be logged out.",
-  "Updated the login page to fix a bug.",
-  "This is a test commit message.",
-  "Fix: Changed node version to 18.16.0 to fix a bug in custom hooks.",
-];
-const score = await compareCommitMessages(messages);
-console.log("Score: ", score);
-console.assert(!isNaN(score), "Test failed: score is Nan");
+// // compareCommitMessages
+// const messages = [
+//   "Fixes a bug in the login page that was causing the user to be logged out.",
+//   "Updated the login page to fix a bug.",
+//   "This is a test commit message.",
+//   "Fix: Changed node version to 18.16.0 to fix a bug in custom hooks.",
+// ];
+// const score = await compareCommitMessages(messages);
+// console.log("Score: ", score);
+// console.assert(!isNaN(score), "Test failed: score is Nan");
 
 
+// evaluateCommits
+const finalScore = await evaluateCommits("mashcodes10", octokit);
+console.log("Final score: ", finalScore);
 
 
 export default evaluateCommits;
