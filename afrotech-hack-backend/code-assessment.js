@@ -1,21 +1,19 @@
-import { octokit } from "./githubInterface.js";
+import { octokit, 
+          checkUser, 
+          getAllRepos, 
+          getUserLargestRepo } from "./githubInterface.js";
 
 
 // retrieve the file with the most lines of code and/or most commits and pass it to the LLM apis for scoring
 
-const mostCommits = async () => {
-
-    
-
+/**
+ * Retrieves the repository with the most lines of code.
+ *  
+ */
+async function getRepoWithMostCommit(username, octokit) {
+  const repos = await getAllRepos(username, octokit);
+  return getLargestRepo(repos.data);
 }
 
-const codeAssessment = async () => {
-  const response = await octokit.rest.repos.getContent({
-    owner: "Lyton505",
-    repo: "CreatorVerse",
-  });
 
-  console.log(response);
-};
 
-codeAssessment();
