@@ -5,7 +5,28 @@ import Categories from "@/components/Categories.tsx";
 import EvaluationTable from "@/components/EvaluationTable.tsx";
 
 export default function Results() {
+    const defaultCodeExample = 'def hello():\n    print("Hello, World!")';
+    const defaultCommitExample = 'Fixed a bug in the code';
+    const defaultCodeLink = 'https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/screens/Results.tsx';
+    const defaultCommitLink = 'https://github.com/lyton505/afrotech-hack-backend/commit/1234567890abcdef';
+    const defaultSummary = "Impressive!"
+
     const [username, setUsername] = useState('');
+
+    const [commitEvaluation, setCommitEvaluation] = useState({
+        score: 0,
+        example: defaultCommitExample,
+        link: defaultCommitLink
+    });
+
+    const [codeEvaluation, setCodeEvaluation] = useState({
+        score: [0, 0, 0, 0, 0],
+        example: [defaultCodeExample, defaultCodeExample, defaultCodeExample, defaultCodeExample, defaultCodeExample],
+        link: [defaultCodeLink, defaultCodeLink, defaultCodeLink, defaultCodeLink, defaultCodeLink],
+        summary: defaultSummary,
+        finalScore: 0
+    });
+
     const location = useLocation();
 
     useEffect(() => {
@@ -18,6 +39,37 @@ export default function Results() {
         // Call the 2 API endpoints here
         // Set the state with the results
         // Use the state to render the components
+
+
+        const runCodeEvaluation = async () => {
+            const codeEvaluationResponse = await fetch('/mock-evaluate-codes', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username })
+            });
+
+            const commitEvaluationResponse = await fetch('/mock-evaluate-commits', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username })
+            });
+
+            const codeEvaluationData = await codeEvaluationResponse.json();
+            const commitEvaluationData = await commitEvaluationResponse.json();
+
+            setCodeEvaluation(codeEvaluationData);
+            setCommitEvaluation(commitEvaluationData);
+        }
+
+        runCodeEvaluation();
+        console.log("codeEvaluation: ", codeEvaluation);
+        console.log("commitEvaluation: ", commitEvaluation);
+        
+
     }, [location]);
 
     return (
