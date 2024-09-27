@@ -11,4 +11,4 @@ After cloning this repo, simply run:
 $ yarn && yarn dev
 ```
 
-This will start the frontend `localhost:{PORT}`.
+This will start the frontend on `localhost:3000`.

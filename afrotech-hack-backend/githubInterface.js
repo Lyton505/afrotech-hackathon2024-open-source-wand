@@ -30,7 +30,7 @@ async function checkUser(username, octokit) {
 
 /**
  * Retrieves all repositories for a given username.
- * 
+ *
  * @param {string} username - The username of the user.
  * @param {Object} octokit - Octokit instance for making API calls.
  * @returns {Promise<Object>} - A promise that resolves to the list of repositories.
@@ -52,23 +52,39 @@ async function getUserLargestRepo(username, octokit) {
 }
 
 /**
+ * Retrieves the number of stars for a given repository.
+ *
+ * @param {Object} repo - The repository object.
+ * @returns {number} - The number of stars for the repository.
+ */
+export const getStars = (repo) => {
+  return repo.stargazers_count;
+};
+
+/**
  * Finds the largest repository based on the number of commits.
  *
  * @param {Array} repositories - An array of repository objects.
  * @returns {Object} - The largest repository object.
  */
 function getLargestRepo(repositories) {
-  const repoWithMostStarAndFork =  repositories.reduce((largest, repo) => {
-    if (!largest || repo.stargazers_count + repo.forks_count > largest.stargazers_count + largest.forks_count) {
+  const repoWithMostStarAndFork = repositories.reduce((largest, repo) => {
+    if (
+      !largest ||
+      getStars(repo) + repo.forks_count >
+        getStars(largest) + largest.forks_count
+    ) {
       return repo;
     }
 
     return largest;
   }, null);
 
-
   // If the user is popular, choose the repo with the most stars
-  if (repoWithMostStarAndFork.stargazers_count >= POPULAR_PROGRAMMER_STARS_THRESHOLD) {
+  if (
+    repoWithMostStarAndFork.stargazers_count >=
+    POPULAR_PROGRAMMER_STARS_THRESHOLD
+  ) {
     return repoWithMostStarAndFork;
   }
 
