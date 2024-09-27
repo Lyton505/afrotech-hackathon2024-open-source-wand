@@ -22,6 +22,13 @@ app.get("/evaluate-commits", async (req, res) => {
   res.send(score.toString());
 });
 
+app.get("/mock-evaluate-commits", async (req, res) => {
+  const username = req.query.username;
+  const score = await evaluateCommits(username, octokit);
+  // returns {score: number, example: string, link: string}
+  res.send(score.toString());
+});
+
 // localhost:3000/evaluate-codes?username=kaleab-a
 app.get("/evaluate-codes", async (req, res) => {
   const owner = req.query.username;
@@ -31,11 +38,12 @@ app.get("/evaluate-codes", async (req, res) => {
   res.send(score.toString());
 });
 
-
-
-app.get("/final", async (req, res) => {
-// returns 
-  res.send(data.userSummary);
+app.get("/mock-evaluate-codes", async (req, res) => {
+  const owner = req.query.username;
+  console.log(owner);
+  const score = await evaluateTheMostCommitedFile(owner, octokit);
+  // returns {score: [number, number, number, number, number], example: [string, string, string], link: [string, string, string], summary: string, finalScore: number}
+  res.send(score.toString());
 });
 
 // localhost:3000
