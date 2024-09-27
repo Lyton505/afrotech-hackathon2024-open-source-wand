@@ -2,6 +2,9 @@ import express from "express";
 import evaluateCommits from "./evaluate-commits.js";
 import { octokit } from "./githubInterface.js";
 
+import * as data from "./data.js";
+
+
 const app = express();
 const port = 3000;
 
@@ -17,55 +20,6 @@ app.post("/submit", async (req, res) => {
 
   const finalScore = await evaluateCommits(username, octokit);
 
-  // test data
-  const styleScore = 90;
-  const qualityScore = 95;
-  const complexityScore = 90;
-  const opennessScore = 90;
-  const impactScore = 90;
-
-  const qualitySummary =
-    "Lyton505 has demonstrated a strong proficiency in various aspects of coding. The evaluation highlights their exceptional code quality, with high scores in readability and minimal linting errors.";
-
-  const userSummary =
-    "Lyton505 has demonstrated a strong proficiency in various aspects of coding. The evaluation highlights their exceptional code quality, with high scores in readability and minimal linting errors. Their code style is commendable, particularly in variable naming, code comments, and proper indentation/spacing. Lyton505 also adheres well to open source standards, providing meaningful commit messages. However, there are areas that need improvement. The overall impact of their code could be enhanced, as the commit frequency is lower than desired and not all commits are merged. Additionally, there is room for growth in contributing to more diverse open source projects. This summary underscores both Lyton505's strengths and areas for further development.";
-
-  const readability_score = 90;
-  const function_modularity_score = 90;
-
-  const variable_naming_score = 90;
-  const code_comments_score = 90;
-  const indentation_spacing_score = 90;
-
-  const variable_naming_example = "Use camelCase for variable names.";
-
-  const variable_naming_link = "https://www.google.com";
-  const code_comments_link = "https://www.google.com";
-  const indentation_spacing_link = "https://www.google.com";
-
-  const code_comments_example = "Use // for comments.";
-  const indentation_spacing_example = "Use 2 spaces for indentation.";
-
-  const star_count = 1450;
-  const commit_frequency = 100;
-  const percentage_of_total_commits = 78;
-
-  const openness_score = 90;
-  const openness_example = "Use camelCase for variable names.";
-  const openness_link = "https://www.google.com";
-
-  const styleSummary =
-    "Lyton505 has demonstrated a strong proficiency in various aspects of coding. The evaluation highlights their exceptional code quality, with high scores in readability and minimal linting errors. Their code style is commendable, particularly in variable naming, code comments, and proper indentation/spacing.";
-
-  const complexitySummary =
-    "Lyton505 has demonstrated a strong proficiency in various aspects of coding. The evaluation highlights their exceptional code quality, with high scores in readability and minimal linting errors. Their code style is commendable, particularly in variable naming, code comments, and proper indentation/spacing.";
-
-  const opennessSummary =
-    "Lyton505 has demonstrated a strong proficiency in various aspects of coding. The evaluation highlights their exceptional code quality, with high scores in readability and minimal linting errors. Their code style is commendable, particularly in variable naming, code comments, and proper indentation/spacing.";
-
-  const impactSummary =
-    "Lyton505 has demonstrated a strong proficiency in various aspects of coding. The evaluation highlights their exceptional code quality, with high scores in readability and minimal linting errors. Their code style is commendable, particularly in variable naming, code comments, and proper indentation/spacing.";
-  // end test data
 
   const evaluationResponse = {
     results: [
@@ -74,7 +28,7 @@ app.post("/submit", async (req, res) => {
         wizardRating: finalScore,
       },
     ],
-    summary: userSummary,
+    summary: data.userSummary,
     skills: [
       {
         Torvalds: {
@@ -87,59 +41,59 @@ app.post("/submit", async (req, res) => {
       },
       {
         [username]: {
-          style_score: styleScore,
-          quality_score: qualityScore,
-          complexity_score: complexityScore,
-          openness_score: opennessScore,
-          impact_score: impactScore,
+          style_score: data.styleScore,
+          quality_score: data.qualityScore,
+          complexity_score: data.complexityScore,
+          openness_score: data.opennessScore,
+          impact_score: data.impactScore,
         },
       },
     ],
     skill_summary: [
-      { quality: qualitySummary },
-      { style: styleSummary },
-      { complexity: complexitySummary },
-      { openness: opennessSummary },
-      { impact: impactSummary },
+      { quality: data.qualitySummary },
+      { style: data.styleSummary },
+      { complexity: data.complexitySummary },
+      { openness: data.opennessSummary },
+      { impact: data.impactSummary },
     ],
     eval: [
       {
         quality: [
-          { readability: readability_score },
-          { modularity: function_modularity_score },
+          { readability: data.readability_score },
+          { modularity: data.function_modularity_score },
         ],
         style: [
           {
             variable_naming: [
-              { score: variable_naming_score },
-              { example: variable_naming_example },
-              { link: variable_naming_link },
+              { score: data.variable_naming_score },
+              { example: data.variable_naming_example },
+              { link: data.variable_naming_link },
             ],
           },
           {
             code_comments: [
-              { score: code_comments_score },
-              { example: code_comments_example },
-              { link: code_comments_link },
+              { score: data.code_comments_score },
+              { example: data.code_comments_example },
+              { link: data.code_comments_link },
             ],
           },
           {
             indentation_spacing: [
-              { score: indentation_spacing_score },
-              { example: indentation_spacing_example },
-              { link: indentation_spacing_link },
+              { score: data.indentation_spacing_score },
+              { example: data.indentation_spacing_example },
+              { link: data.indentation_spacing_link },
             ],
           },
         ],
         openness: [
-          { score: openness_score },
-          { example: openness_example },
-          { link: openness_link },
+          { score: data.openness_score },
+          { example: data.openness_example },
+          { link: data.openness_link },
         ],
         impact: [
-          { star_count: star_count },
-          { commit_frequency: commit_frequency },
-          { percentage_of_total_commits: percentage_of_total_commits },
+          { star_count: data.star_count },
+          { commit_frequency: data.commit_frequency },
+          { percentage_of_total_commits: data.percentage_of_total_commits },
         ],
       },
     ],
