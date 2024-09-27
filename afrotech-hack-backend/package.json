@@ -2,6 +2,7 @@
   "name": "afrotech-hack-backend",
   "version": "1.0.0",
   "main": "claude-interface.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
