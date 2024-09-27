@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY2,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 const getOpenAICommitScore = async (commitMessage, comparisonPrompt) => {
@@ -41,6 +41,6 @@ const testCommitScore = async () => {
   }
 };
 
-testCommitScore();
+// testCommitScore();
 
 export default getOpenAICommitScore;
