@@ -1,9 +1,25 @@
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import RadarChart from "@/components/ui/radar_chart";
 import Categories from "@/components/Categories.tsx";
 import EvaluationTable from "@/components/EvaluationTable.tsx";
 
-
 export default function Results() {
+    const [username, setUsername] = useState('');
+    const location = useLocation();
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const usernameParam = searchParams.get('username');
+        if (usernameParam) {
+            setUsername(usernameParam);
+        }
+
+        // Call the 2 API endpoints here
+        // Set the state with the results
+        // Use the state to render the components
+    }, [location]);
+
     return (
         <div className={"flex flex-col gap-16"}>
             <div className="flex gap-4 flex-col justify-between h-full">
@@ -12,7 +28,7 @@ export default function Results() {
                 <div
                     className="flex flex-col">
                     <h1 className="text-xl font-bold">Results</h1>
-                    <h2 className="text-base">Username: Lyton505</h2>
+                    <h2 className="text-base">Username: {username}</h2>
                     <h2 className="text-base">Wizard rating: 67 Oz</h2>
                 </div>
 
@@ -39,5 +55,5 @@ export default function Results() {
                 <EvaluationTable/>
             </div>
         </div>
-    )
+    );
 }

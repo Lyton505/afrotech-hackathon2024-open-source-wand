@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { LoadingButton } from "./ui/loading_button"
 import { log } from "console"
 
@@ -27,6 +27,15 @@ const formSchema = z.object({
 })
 
 export function ProfileForm() {
+    const [username, setUsername] = useState("");
+    const usernameRef = useRef(username);
+
+    useEffect(() => {
+        usernameRef.current = username;
+
+        
+    }, [username]);
+
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -37,35 +46,16 @@ export function ProfileForm() {
 
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        // submit to backend endpoint /profile
-
-        // For development purposes only
-        if (process.env.NODE_ENV === 'development') {
-            console.log("Running in development mode");
-            console.log("Values:", values);
-            setIsLoading(true);
-            setTimeout(() => {
-                setIsLoading(false);
-                console.log("Waiting for 5 seconds");
-                window.location.href = "/loading";
-                console.log("Redirected to loading page");
-            }, 5000);
-        } else {
-            try {
-                const response = await fetch("/profile", {
-                    method: "POST",
-                    body: JSON.stringify(values),
-                });
-                const data = await response.json()
-                console.log(data)
-            } catch (error) {
-                console.log("Error fetching profile");
-                console.error(error)
-            }
-        }
-
+        console.log("Running in development mode");
+        console.log("Values:", values);
+        setUsername(values.username);
+        setIsLoading(true);
+        setTimeout(() => {
+            setIsLoading(false);
+            console.log("Waiting for 5 seconds");
+            window.location.href = `/loading?username=${encodeURIComponent(values.username)}`;
+            console.log("Redirected to loading page");
+        }, 2000);
     }
 
     const [isLoading, setIsLoading] = useState(false)
