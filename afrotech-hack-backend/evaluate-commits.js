@@ -76,7 +76,6 @@ async function evaluateCommits(username, octokit) {
 
   let allMessages = [];
   for await (const { data: commits } of commitIterator) {
-
     allMessages.push(
       ...commits.map((commit) => {
         const author = commit.author.login;
@@ -144,7 +143,7 @@ function calculateFinalAverage(scores) {
 // console.assert(!isNaN(score), "Test failed: score is Nan");
 
 // evaluateCommits
-const finalScore = await evaluateCommits("mashcodes10", octokit);
-console.log("Final score: ", finalScore);
+// const finalScore = await evaluateCommits("mashcodes10", octokit);
+// console.log("Final score: ", finalScore);
 
 export default evaluateCommits;
