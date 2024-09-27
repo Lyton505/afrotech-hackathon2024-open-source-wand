@@ -7,7 +7,7 @@ import {Radar } from "react-chartjs-2";
 Chart.register(CategoryScale);
 
 export default function RadarChart() {
-    console.log("Data sample: ", Data);
+    // console.log("Data sample: ", Data);
     
     const [chartData, setChartData] = useState(Data);
 
