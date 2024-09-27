@@ -61,6 +61,7 @@ function calculateIterationAverageScore(scores) {
  */
 async function evaluateCommits(username, octokit) {
   const repo = await getUserLargestRepo(username, octokit);
+  // console.log("Repo: ", repo);
   if (!repo) return 0;
 
   const commitIterator = octokit.paginate.iterator(
@@ -112,10 +113,10 @@ async function evaluateCommits(username, octokit) {
  * @param {Array} scores - Array of scores from all iterations.
  * @returns {number} - The final average score.
  */
-function calculateFinalAverage(scores) {
-  const total = scores.reduce((acc, score) => acc + score, 0);
-  return Math.round(total / scores.length);
-}
+// function calculateFinalAverage(scores) {
+//   const total = scores.reduce((acc, score) => acc + score, 0);
+//   return Math.round(total / scores.length);
+// }
 
 // Test Code for each method
 // // checkUser
@@ -143,7 +144,7 @@ function calculateFinalAverage(scores) {
 // console.assert(!isNaN(score), "Test failed: score is Nan");
 
 // evaluateCommits
-// const finalScore = await evaluateCommits("mashcodes10", octokit);
+// const finalScore = await evaluateCommits("kaleab-A", octokit);
 // console.log("Final score: ", finalScore);
 
 export default evaluateCommits;
