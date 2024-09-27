@@ -3,6 +3,7 @@ import getOpenAIScore from "./openai-interface.js";
 import getClaudeCommitScore from "./claude-interface.js";
 import getGeminiCommitScore from "./gemini-interface.js";
 import { octokit, checkUser, getUserLargestRepo } from "./githubInterface.js";
+// import totalImpact from "./total-impact.js";
 
 dotenv.config();
 
@@ -14,22 +15,22 @@ dotenv.config();
  */
 async function compareCommitMessages(messages) {
   const comparisonPrompt = "You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. You must only return a one word response of a score between 0 and 100. If the commit message is null, return a score of 0. It has to be a number always. 100 means it is a perfect commit message, 0 means it is a bad commit message.";
-  
+
   // Generate all scoring promises for each message across all scoring models
-  const scoringPromises = messages.flatMap(message => [
+  const scoringPromises = messages.flatMap((message) => [
     getOpenAIScore(message, comparisonPrompt),
     getClaudeCommitScore(message, comparisonPrompt),
-    getGeminiCommitScore(message, comparisonPrompt)
+    getGeminiCommitScore(message, comparisonPrompt),
   ]);
-  
+
   // Resolve all promises and collect scores
   let scores = await Promise.all(scoringPromises);
 
   // Parse Integers from the scores
-  scores = scores.map(score => parseInt(score));
+  scores = scores.map((score) => parseInt(score));
 
   console.log("Scores: ", scores);
-  
+
   // Calculate and return the average score of all messages
   return calculateIterationAverageScore(scores);
 }
@@ -54,27 +55,50 @@ function calculateIterationAverageScore(scores) {
  */
 async function evaluateCommits(username, octokit) {
   const repo = await getUserLargestRepo(username, octokit);
+  // console.log("Repo: ", repo);
   if (!repo) return 0;
 
-  const commitIterator = octokit.paginate.iterator(octokit.rest.repos.listCommits, {
-    owner: username,
-    repo: repo.name,
-    per_page: 5
-  });
+  const commitIterator = octokit.paginate.iterator(
+    octokit.rest.repos.listCommits,
+    {
+      owner: username,
+      repo: repo.name,
+      per_page: 5,
+    },
+  );
+
+  let userCommitCount = 0;
 
   let allMessages = [];
   for await (const { data: commits } of commitIterator) {
-    allMessages.push(...commits.map(commit => commit.commit.message));
+    allMessages.push(
+      ...commits.map((commit) => {
+        const author = commit.author.login;
+        if (author == username) {
+          userCommitCount++;
+        }
+
+        return commit.commit.message;
+      }),
+    );
   }
 
-  if (allMessages.length === 0) return 0;  // Return 0 if no commit messages are found
+  if (allMessages.length === 0) {
+    return 0;
+  } else {
+    console.log("All Messages: ", allMessages);
 
-  console.log("All Messages: ", allMessages);
+    // const [stars, impact] = totalImpact(
+    //   getStars(repo),
+    //   userCommitCount,
+    //   allMessages.length,
+    // );
 
-  // You might choose to process all messages at once or in chunks if the array is too large
-  const finalScore = await compareCommitMessages(allMessages);
+    // You might choose to process all messages at once or in chunks if the array is too large
+    const finalScore = await compareCommitMessages(allMessages);
 
-  return finalScore;
+    return finalScore;
+  }
 }
 
 /**
@@ -83,11 +107,10 @@ async function evaluateCommits(username, octokit) {
  * @param {Array} scores - Array of scores from all iterations.
  * @returns {number} - The final average score.
  */
-function calculateFinalAverage(scores) {
-  const total = scores.reduce((acc, score) => acc + score, 0);
-  return Math.round(total / scores.length);
-}
-
+// function calculateFinalAverage(scores) {
+//   const total = scores.reduce((acc, score) => acc + score, 0);
+//   return Math.round(total / scores.length);
+// }
 
 // Test Code for each method
 // // checkUser
