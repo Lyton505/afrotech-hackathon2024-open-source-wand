@@ -3,7 +3,7 @@ import { Octokit, App } from "octokit";
 
 dotenv.config();
 
-POPULAR_PROGRAMMER_STARS_THRESHOLD = 7;
+const POPULAR_PROGRAMMER_STARS_THRESHOLD = 7;
 
 /**
  * Initializes the Octokit instance with the GitHub token.

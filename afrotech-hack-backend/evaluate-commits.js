@@ -117,7 +117,7 @@ function calculateFinalAverage(scores) {
 
 
 // evaluateCommits
-const finalScore = await evaluateCommits("mashcodes10", octokit);
+const finalScore = await evaluateCommits("kaleab-A", octokit);
 console.log("Final score: ", finalScore);
 
 
