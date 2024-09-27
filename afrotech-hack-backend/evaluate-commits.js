@@ -54,7 +54,6 @@ function calculateIterationAverageScore(scores) {
  */
 async function evaluateCommits(username, octokit) {
   const repo = await getUserLargestRepo(username, octokit);
-  console.log("Repo: ", repo);
   if (!repo) return 0;
 
   const commitIterator = octokit.paginate.iterator(octokit.rest.repos.listCommits, {
@@ -117,8 +116,8 @@ function calculateFinalAverage(scores) {
 
 
 // evaluateCommits
-const finalScore = await evaluateCommits("kaleab-A", octokit);
-console.log("Final score: ", finalScore);
+// const finalScore = await evaluateCommits("kaleab-A", octokit);
+// console.log("Final score: ", finalScore);
 
 
-export default evaluateCommits;
+export {evaluateCommits};
