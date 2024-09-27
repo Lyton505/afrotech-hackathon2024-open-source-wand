@@ -1,0 +1,19 @@
+{
+  "name": "afrotech-hack-backend",
+  "version": "1.0.0",
+  "main": "claude-interface.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.3",
+    "@google/generative-ai": "^0.19.0",
+    "dotenv": "^16.4.5",
+    "octokit": "^4.0.2",
+    "openai": "^4.65.0"
+  }
+}
