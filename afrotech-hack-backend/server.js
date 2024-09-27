@@ -1,9 +1,8 @@
-import express from "express";
-import evaluateCommits from "./evaluate-commits.js";
-import { octokit } from "./githubInterface.js";
-
 import * as data from "./data.js";
-
+import express from "express";
+import { octokit } from "./githubInterface.js";
+import { evaluateTheMostCommitedFile } from "./code-assessment.js";
+import { evaluateCommits } from "./evaluate-commits.js";
 
 const app = express();
 const port = 3000;
@@ -19,7 +18,6 @@ app.post("/submit", async (req, res) => {
   console.log("Username: ", username);
 
   const finalScore = await evaluateCommits(username, octokit);
-
 
   const evaluationResponse = {
     results: [
@@ -104,6 +102,21 @@ app.post("/submit", async (req, res) => {
 
 const PORT = process.env.PORT || 3017;
 
-app.listen(PORT, () => {
-  console.log(`🚀Server is running on port ${PORT}`);
+app.get("/evaluate-commits", async (req, res) => {
+  const username = req.query.username;
+  const score = await evaluateCommits(username, octokit);
+  res.send(score.toString());
+});
+
+// localhost:3000/evaluate-codes?username=kaleab-a
+app.get("/evaluate-codes", async (req, res) => {
+  const owner = req.query.username;
+  console.log(owner);
+  const score = await evaluateTheMostCommitedFile(owner, octokit);
+  res.send(score.toString());
+});
+
+// localhost:3000
+app.listen(port, () => {
+  console.log(`🚀Server is running on port ${port}`);
 });

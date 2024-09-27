@@ -6,7 +6,7 @@ import getOpenAIScore from "./openai-interface.js";
 import getClaudeCommitScore from "./claude-interface.js";
 import getGeminiCommitScore from "./gemini-interface.js";
 
-const MAX_COMMITS_PROCESSED = 50;
+const MAX_COMMITS_PROCESSED = 50; // TODO: Dont know if this is the most recent 50 commits or the first 50 commits
 
 
 async function fetchCommits(owner, repo) {
@@ -58,7 +58,7 @@ async function countFileChanges(owner, repo) {
   return fileChangeCounts;
 }
 
-async function findMostCommittedFile(owner, repo) {
+async function findMostCommittedFile(owner, repo) { // TODO: Instead of getting only one file, get the top 5 most committed files
   const fileChangeCounts = await countFileChanges(owner, repo);
   let mostCommittedFile = '';
   let maxChanges = 0;
@@ -116,6 +116,23 @@ async function evaluateCode(code){
   return averageScores;
 }
 
+async function evaluateTheMostCommitedFile(owner, octokit) {
+  const largerstRepo = await getUserLargestRepo(owner, octokit);
+  console.log(largerstRepo.full_name);
+
+  const mostCommitedFile = await findMostCommittedFile(owner, largerstRepo.name);
+  console.log(mostCommitedFile);
+
+  const fileContent = await getContentOfFile(owner, largerstRepo.name, mostCommitedFile);
+
+  const evaluation = await evaluateCode(fileContent);
+  console.log("Evaluation: ", evaluation);
+
+  return evaluation;
+}
+
+export { evaluateTheMostCommitedFile };
+
 
 // TESTING - To Be Commented Out
 // const mostCommitedFile = await findMostCommittedFile('ghemingway', 'cad.js');
@@ -129,3 +146,6 @@ async function evaluateCode(code){
 // console.log(fileContent);
 
 // evaluateCode(fileContent);
+
+// evaluateTheMostCommitedFile('intiserp', octokit);
+

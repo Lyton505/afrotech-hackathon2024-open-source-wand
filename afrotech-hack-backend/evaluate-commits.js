@@ -2,13 +2,7 @@ import dotenv from "dotenv";
 import getOpenAIScore from "./openai-interface.js";
 import getClaudeCommitScore from "./claude-interface.js";
 import getGeminiCommitScore from "./gemini-interface.js";
-import {
-  octokit,
-  checkUser,
-  getUserLargestRepo,
-  getStars,
-} from "./githubInterface.js";
-import totalImpact from "./evaluate-impact.js";
+import { octokit, checkUser, getUserLargestRepo } from "./githubInterface.js";
 
 dotenv.config();
 
@@ -19,8 +13,7 @@ dotenv.config();
  * @returns {Promise<number>} - A promise that resolves to the average score of the commit messages.
  */
 async function compareCommitMessages(messages) {
-  const comparisonPrompt =
-    "You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. You must only return a one word response of a score between 0 and 100. If the commit message is null, return a score of 0. It has to be a number always. 100 means it is a perfect commit message, 0 means it is a bad commit message.";
+  const comparisonPrompt = "You are an expert in analyzing github commit messages and determining if they are written to standard with meaning commit messages, sufficient in detail, adequate titles less than 20 characters, and contain useful information not just filler like 'fixed' or 'updated'. You must only return a one word response of a score between 0 and 100. If the commit message is null, return a score of 0. It has to be a number always. 100 means it is a perfect commit message, 0 means it is a bad commit message.";
 
   // Generate all scoring promises for each message across all scoring models
   const scoringPromises = messages.flatMap((message) => [
@@ -143,8 +136,10 @@ async function evaluateCommits(username, octokit) {
 // console.log("Score: ", score);
 // console.assert(!isNaN(score), "Test failed: score is Nan");
 
+
 // evaluateCommits
 // const finalScore = await evaluateCommits("kaleab-A", octokit);
 // console.log("Final score: ", finalScore);
 
-export default evaluateCommits;
+
+export {evaluateCommits};
