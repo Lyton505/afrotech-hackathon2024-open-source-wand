@@ -17,5 +17,8 @@
     "express": "^4.21.0",
     "octokit": "^4.0.2",
     "openai": "^4.65.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.10"
   }
 }
