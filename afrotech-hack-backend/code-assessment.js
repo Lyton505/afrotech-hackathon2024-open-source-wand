@@ -7,7 +7,12 @@ import getClaudeCommitScore from "./claude-interface.js";
 import getGeminiCommitScore from "./gemini-interface.js";
 
 const MAX_COMMITS_PROCESSED = 50; // TODO: Dont know if this is the most recent 50 commits or the first 50 commits
-
+const CODE_FILE_EXTENSIONS = [".c", ".cpp", ".cxx", ".cc", ".C", ".h", ".hpp", ".hxx", ".hh", ".cs", ".java", ".js", ".ts",
+                              ".py", ".rb", ".php", ".swift", ".kt", ".kts", ".go", ".rs", ".pl", ".pm", ".scala", ".ex", 
+                              ".exs", ".clj", ".cljs", ".cljc", ".edn", ".dart", ".m", ".mm", ".hs", ".lhs", ".lua", ".sh", 
+                              ".bash", ".ps1", ".sql", ".html", ".htm", ".css", ".xml", ".json", ".yaml", ".yml", ".m", ".R", 
+                              ".r", ".groovy", ".gvy", ".gy", ".gsh", ".vb", ".asm", ".s", ".f", ".for", ".f90", ".f95"];
+const CODE_LINES_LIMIT = 1000;
 
 async function fetchCommits(owner, repo) {
   let commits = [];
@@ -29,6 +34,12 @@ async function fetchCommits(owner, repo) {
   return commits;
 }
 
+/**
+ *  Returns the file path of the most committed file in the repository
+ * @param {*} owner 
+ * @param {*} repo 
+ * @returns 
+ */
 async function countFileChanges(owner, repo) {
   const commits = await fetchCommits(owner, repo);
   let fileChangeCounts = {};
@@ -42,10 +53,13 @@ async function countFileChanges(owner, repo) {
     });
 
     for (const file of commitData.data.files) {
-      if (file.filename in fileChangeCounts) {
-        fileChangeCounts[file.filename]++;
-      } else {
-        fileChangeCounts[file.filename] = 1;
+      // Check if the file is a code file
+      if (CODE_FILE_EXTENSIONS.includes(file.filename.slice(file.filename.lastIndexOf('.')))) {
+        if (file.filename in fileChangeCounts) {
+          fileChangeCounts[file.filename]++;
+        } else {
+          fileChangeCounts[file.filename] = 1;
+        }
       }
     }
 
@@ -137,15 +151,16 @@ export { evaluateTheMostCommitedFile };
 // TESTING - To Be Commented Out
 // const mostCommitedFile = await findMostCommittedFile('ghemingway', 'cad.js');
 // const mostCommitedFile = await findMostCommittedFile('intiserp', 'donocode');
-// const mostCommitedFile = "frontend/src/Router.js";
+const mostCommitedFile = "1. Data Collection/Web/bing_images.py";
 
-// console.log(mostCommitedFile);
+console.log(mostCommitedFile);
 
-// const fileContent = await getContentOfFile('intiserp', 'donocode', mostCommitedFile);
+const fileContent = await getContentOfFile('kaleab-a', 'socks-matching', mostCommitedFile);
 
-// console.log(fileContent);
+console.log(fileContent);
 
 // evaluateCode(fileContent);
 
 // evaluateTheMostCommitedFile('intiserp', octokit);
+
 
