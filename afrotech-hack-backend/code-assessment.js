@@ -116,6 +116,12 @@ async function evaluateCode(code){
   return averageScores;
 }
 
+/**
+ * Evaluates the most committed file in the largest repository of the user.
+ * @param {string} owner - The owner of the repository.
+ * @param {Octokit} octokit - The Octokit instance.
+ * @returns {Promise<Array<number>>} - The average scores for each aspect of the code.
+ */
 async function evaluateTheMostCommitedFile(owner, octokit) {
   const largerstRepo = await getUserLargestRepo(owner, octokit);
   console.log(largerstRepo.full_name);

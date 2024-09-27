@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.post("/submit", async (req, res) => {
+app.get("/submit", async (req, res) => {
   const username = req.body.username;
   console.log("Username: ", username);
 
@@ -97,6 +97,8 @@ app.post("/submit", async (req, res) => {
     ],
   };
 
+
+
   res.send(evaluationResponse);
 });
 
@@ -105,6 +107,7 @@ const PORT = process.env.PORT || 3017;
 app.get("/evaluate-commits", async (req, res) => {
   const username = req.query.username;
   const score = await evaluateCommits(username, octokit);
+  // returns {score: number, example: string, link: string}
   res.send(score.toString());
 });
 
@@ -113,7 +116,15 @@ app.get("/evaluate-codes", async (req, res) => {
   const owner = req.query.username;
   console.log(owner);
   const score = await evaluateTheMostCommitedFile(owner, octokit);
+  // returns {score: [number, number, number, number, number], example: [string, string, string], link: [string, string, string], summary: string, finalScore: number}
   res.send(score.toString());
+});
+
+
+
+app.get("/final", async (req, res) => {
+// returns 
+  res.send(data.userSummary);
 });
 
 // localhost:3000

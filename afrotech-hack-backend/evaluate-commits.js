@@ -3,6 +3,7 @@ import getOpenAIScore from "./openai-interface.js";
 import getClaudeCommitScore from "./claude-interface.js";
 import getGeminiCommitScore from "./gemini-interface.js";
 import { octokit, checkUser, getUserLargestRepo } from "./githubInterface.js";
+// import totalImpact from "./total-impact.js";
 
 dotenv.config();
 
@@ -87,11 +88,11 @@ async function evaluateCommits(username, octokit) {
   } else {
     console.log("All Messages: ", allMessages);
 
-    const [stars, impact] = totalImpact(
-      getStars(repo),
-      userCommitCount,
-      allMessages.length,
-    );
+    // const [stars, impact] = totalImpact(
+    //   getStars(repo),
+    //   userCommitCount,
+    //   allMessages.length,
+    // );
 
     // You might choose to process all messages at once or in chunks if the array is too large
     const finalScore = await compareCommitMessages(allMessages);
