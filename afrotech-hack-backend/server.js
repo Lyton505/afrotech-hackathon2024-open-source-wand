@@ -4,6 +4,20 @@ import { octokit } from "./githubInterface.js";
 import { evaluateTheMostCommitedFile } from "./code-assessment.js";
 import { evaluateCommits } from "./evaluate-commits.js";
 
+// interface codeEvaluationResponse {
+//   score: number[5];
+//   example: string[5];
+//   link: string[5];
+//   summary: string;
+//   finalScore: number;
+// }
+
+// interface CommitEvaluationResponse {
+//   score: number;
+//   example: string;
+//   link: string;
+// }
+
 const app = express();
 const port = 3000;
 
@@ -24,9 +38,18 @@ app.get("/evaluate-commits", async (req, res) => {
 
 app.get("/mock-evaluate-commits", async (req, res) => {
   const username = req.query.username;
-  const score = await evaluateCommits(username, octokit);
+  // const score = await evaluateCommits(username, octokit);
   // returns {score: number, example: string, link: string}
-  res.send(score.toString());
+  console.log("Mocked evaluate commits");
+  console.log("username", username);
+  
+
+  setTimeout(() => {res.send({
+    score: 85,
+    example: "This is an example.",
+    link: "https://github.com/lyton505/afrotech-hack-backend/blob/main/example.py",
+  });}, 2000);
+  // res.send(score.toString());
 });
 
 // localhost:3000/evaluate-codes?username=kaleab-a
@@ -40,10 +63,32 @@ app.get("/evaluate-codes", async (req, res) => {
 
 app.get("/mock-evaluate-codes", async (req, res) => {
   const owner = req.query.username;
-  console.log(owner);
-  const score = await evaluateTheMostCommitedFile(owner, octokit);
+  console.log("Mocked evaluate codes");
+  // const score = await evaluateTheMostCommitedFile(owner, octokit);
   // returns {score: [number, number, number, number, number], example: [string, string, string], link: [string, string, string], summary: string, finalScore: number}
-  res.send(score.toString());
+
+  setTimeout(() => {res.send({
+    score: [85, 90, 75, 80, 95],
+    example: [
+      'def example_function():\n    return "This is an example."',
+      'def another_example():\n    print("Another example function.")',
+      'def yet_another_example():\n    pass',
+      'def final_example():\n    return True',
+      'def last_example():\n    return None'
+    ],
+    link: [
+      'https://github.com/lyton505/afrotech-hack-backend/blob/main/example1.py',
+      'https://github.com/lyton505/afrotech-hack-backend/blob/main/example2.py',
+      'https://github.com/lyton505/afrotech-hack-backend/blob/main/example3.py',
+      'https://github.com/lyton505/afrotech-hack-backend/blob/main/example4.py',
+      'https://github.com/lyton505/afrotech-hack-backend/blob/main/example5.py'
+    ],
+      summary: 'The code demonstrates a solid understanding of Python syntax and structure, with a focus on function definitions and return values.',
+      finalScore: 85
+    });
+  }, 5000);
+  
+  // res.send(score.toString());
 });
 
 // localhost:3000
