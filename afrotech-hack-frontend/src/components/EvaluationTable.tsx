@@ -9,115 +9,89 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export default function EvaluationTable() {
+export default function EvaluationTable({qualityInfo, styleInfo, impactInfo, standardsInfo, finalScore}: {qualityInfo: any, styleInfo: any, impactInfo: any, standardsInfo: any, finalScore: number}) {
+
+
   const evaluationMock = [
     {
       metric: "Code Quality",
-      score: 98,
+      score: qualityInfo.avgScore,
       criteria: [
         {
           name: "Readability",
-          sample:
-            "def f(x,y,z):return[i for i in range(x)if i%y==0 and sum([int(j)for j in str(i)])==z]",
-          score: 10,
-          link: "https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/components/EvaluationTable.tsx",
+          sample:qualityInfo.props[0].example,
+          score: qualityInfo.props[0].readability,
+          link: qualityInfo.props[0].link,
         },
         {
-          name: "Linting errors",
+          name: "Function modularity",
           sample:
-            "function add(a,b){return a+b}  // Missing spaces after commas and around operators",
-          score: 90,
-          link: "https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/components/EvaluationTable.tsx",
+            qualityInfo.props[1].example,
+          score: qualityInfo.props[1].modularity,
+          link: qualityInfo.props[1].link,
         },
       ],
     },
     {
       metric: "Code Style",
-      score: 95,
+      score: styleInfo.avgScore,
       criteria: [
         {
           name: "Variable naming",
           sample:
-            'int totalAmount = 0; // Good variable naming for total amount\nString userName = "JohnDoe"; // Clear and descriptive variable name for user',
-          score: 100,
-          link: "https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/components/EvaluationTable.tsx",
+            styleInfo.props[0].example,
+          score: styleInfo.props[0].naming,
+          link: styleInfo.props[0].link,
         },
         {
           name: "Code comments",
           sample:
-            "// Destructor for the MyClass class\n" +
-            "~MyClass() {\n" +
-            "    // Free the dynamically allocated memory\n" +
-            "    delete[] this->data;\n" +
-            "    // Log the destruction of the object\n" +
-            '    std::cout << "MyClass object destroyed" << std::endl;\n' +
-            "}",
-          score: 100,
-          link: "https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/components/EvaluationTable.tsx",
+            styleInfo.commentsSample,
+          score: styleInfo.props[1].comments,
+          link: styleInfo.props[1].link,
         },
         {
           name: "Indentation/Spacing",
           sample:
-            "function add(a, b) {\n    return a + b;  // Proper spacing around operators\n}\n\nif (condition) {\n    // Indented block\n    doSomething();\n}",
-          score: 100,
-          link: "https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/components/EvaluationTable.tsx",
+            styleInfo.spacingSample,
+          score: styleInfo.props[2].spacing,
+          link: styleInfo.props[2].link,
         },
       ],
     },
     {
       metric: "Open source standards",
-      score: 92,
+      score: impactInfo.avgScore,
       criteria: [
         {
           name: "Meaningful commit messages",
-          sample:
-            "fix: Resolve memory leak in user authentication\n\nIdentified and fixed a memory leak occurring during the user authentication process. This commit addresses the issue by properly releasing resources after each authentication attempt, improving overall system stability and performance.",
-          score: 100,
-          link: "https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/components/EvaluationTable.tsx",
+          sample: standardsInfo.props[0].example,
+          score: standardsInfo.props[0].commits,
+          link: standardsInfo.props[0].link,
         },
       ],
     },
     {
       metric: "Code Impact",
-      score: 98,
+      score: impactInfo.avgScore,
       criteria: [
         {
           name: "Stars",
-          score: 10000,
+          score: impactInfo.props[1].stars,
           sample: "n/a",
           link: "https://github.com/lyton505/afrotech-hack-frontend/",
         },
         {
           name: "Commit frequency",
-          score: 85,
-          sample: "10 commits per week. 90% of them are merged.",
+          score: 90,
+          sample: `${impactInfo.props[0].frequency}% of total commits in largest repo`,
           link: "https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/components/EvaluationTable.tsx",
         },
       ],
     },
   ];
 
-  // const evaluation = [
-  //   {
-  //     metric: "Code Quality",
-  //     score: 98,
-  //     sample: "-",
-  //     criteria: [
-  //       {
-  //         name: "Readability",
-  //         sample:
-  //           "def f(x,y,z):return[i for i in range(x)if i%y==0 and sum([int(j)for j in str(i)])==z]",
-  //         score: 10,
-  //       },
-  //       {
-  //         name: "Linting errors",
-  //         sample:
-  //           "function add(a,b){return a+b}  // Missing spaces after commas and around operators",
-  //         score: 90,
-  //       },
-  //     ],
-  //   },
-  // ];
+
 
   return (
     <Table>
@@ -158,7 +132,8 @@ export default function EvaluationTable() {
                   {criteria.name}
                 </TableCell>
                 <TableCell className="text-center text-sm">
-                  {criteria.score}
+                    {/* {console.log("criteria.score", criteria.score, " on ", criteria)} */}
+                  {criteria.score} / 100
                 </TableCell>
                 <TableCell className="text-center w-1/3 break-words text-xs">
                   <div className="flex flex-col gap-2">
@@ -190,7 +165,7 @@ export default function EvaluationTable() {
             Weighted Total
           </TableCell>
           <TableCell className="text-right font-bold text-lg">
-            92.75 / 100
+            {finalScore} / 100
           </TableCell>
         </TableRow>
       </TableFooter>
