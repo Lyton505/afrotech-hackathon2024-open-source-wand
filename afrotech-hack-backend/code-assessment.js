@@ -95,6 +95,7 @@ async function getContentOfFile(owner, repo, path) {
       path: path
     });
 
+
     // Decode the content from Base64
     if (response.data.content) {
       const content = Buffer.from(response.data.content, 'base64').toString('utf8');
@@ -144,6 +145,7 @@ async function evaluateTheMostCommitedFile(owner, octokit) {
   console.log(mostCommitedFile);
 
   const fileContent = await getContentOfFile(owner, largerstRepo.name, mostCommitedFile);
+  console.log("File Content: ", fileContent);
 
   const evaluation = await evaluateCode(fileContent);
   console.log("Evaluation: ", evaluation);
@@ -157,16 +159,18 @@ export { evaluateTheMostCommitedFile };
 // TESTING - To Be Commented Out
 // const mostCommitedFile = await findMostCommittedFile('ghemingway', 'cad.js');
 // const mostCommitedFile = await findMostCommittedFile('intiserp', 'donocode');
-const mostCommitedFile = "1. Data Collection/Web/bing_images.py";
+// const mostCommitedFile = "1. Data Collection/Web/bing_images.py";
 
-console.log(mostCommitedFile);
+// console.log(mostCommitedFile);
 
-const fileContent = await getContentOfFile('kaleab-a', 'socks-matching', mostCommitedFile);
+// const fileContent = await getContentOfFile('kaleab-a', 'socks-matching', mostCommitedFile);
 
-console.log(fileContent);
+// console.log(fileContent);
 
 // evaluateCode(fileContent);
 
 // evaluateTheMostCommitedFile('intiserp', octokit);
 
+
+// fetchCommits('kaleab-a', 'socks-matching');
 

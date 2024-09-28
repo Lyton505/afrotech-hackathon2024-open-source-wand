@@ -3,9 +3,11 @@ import getOpenAIScore from "./openai-interface.js";
 import getClaudeCommitScore from "./claude-interface.js";
 import getGeminiCommitScore from "./gemini-interface.js";
 import { octokit, checkUser, getUserLargestRepo } from "./githubInterface.js";
-// import totalImpact from "./total-impact.js";
+import { response } from "express";
 
 dotenv.config();
+
+const MAX_COMMITS_PROCESSED = 20;
 
 /**
  * Compares a list of commit messages and returns their scores.
@@ -55,58 +57,64 @@ function calculateIterationAverageScore(scores) {
  */
 async function evaluateCommits(username, octokit) {
   const repo = await getUserLargestRepo(username, octokit);
-  // console.log("Repo: ", repo);
+  console.log("Repo: ", repo.name);
   if (!repo) return 0;
 
+  const commitsPerPage = 10;
   const commitIterator = octokit.paginate.iterator(
     octokit.rest.repos.listCommits,
     {
       owner: username,
       repo: repo.name,
-      per_page: 5,
+      per_page: commitsPerPage,
     },
   );
 
-  let userCommitCount = 0;
-
+  let commitsPageURL = null;
   let allMessages = [];
-  for await (const { data: commits } of commitIterator) {
-    allMessages.push(
-      ...commits.map((commit) => {
-        const author = commit.author.login;
-        if (author == username) {
-          userCommitCount++;
-        }
 
-        return commit.commit.message;
-      }),
+  let cnt = 0;
+  for await (const { data: commits } of commitIterator) {
+    cnt += commits.length;
+    if (cnt > MAX_COMMITS_PROCESSED) {
+      break;
+    }
+
+    if (commitsPageURL === null) {
+      commitsPageURL = commits[0].html_url;
+    }
+
+    // Append all commit messages to the allMessages array after checking it is by the user
+    allMessages.push(
+      ...commits
+        .filter((commit) => commit.commit.author.name.toLowerCase() === username.toLowerCase())
+        .map((commit) => commit.commit.message),
     );
   }
 
   if (allMessages.length === 0) {
     return 0;
   } else {
-    console.log("All Messages: ", allMessages);
-
-    // const [stars, impact] = totalImpact(
-    //   getStars(repo),
-    //   userCommitCount,
-    //   allMessages.length,
-    // );
 
     // You might choose to process all messages at once or in chunks if the array is too large
     const finalScore = await compareCommitMessages(allMessages);
 
-    return finalScore;
+    const example = allMessages.slice(0, 5).join("\n");
+     
+    // Split commitPageURL by / and get everything except the last element
+    commitsPageURL = commitsPageURL.split("/").slice(0, -2).join("/") + "/commits";
+
+    let response = {
+      score: finalScore,
+      example: example,
+      link: commitsPageURL,
+    };
+
+    return response;
   }
 }
 
-/**
- * Calculates the final average score from all iterations.
- *
- * @param {Array} scores - Array of scores from all iterations.
- * @returns {number} - The final average score.
- */
+
 // function calculateFinalAverage(scores) {
 //   const total = scores.reduce((acc, score) => acc + score, 0);
 //   return Math.round(total / scores.length);
@@ -138,8 +146,7 @@ async function evaluateCommits(username, octokit) {
 // console.assert(!isNaN(score), "Test failed: score is Nan");
 
 
-// evaluateCommits
-// const finalScore = await evaluateCommits("kaleab-A", octokit);
+// const finalScore = await evaluateCommits("kaleab-a", octokit);
 // console.log("Final score: ", finalScore);
 
 

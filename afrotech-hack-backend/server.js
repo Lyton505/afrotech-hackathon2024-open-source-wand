@@ -17,9 +17,9 @@ const PORT = process.env.PORT || 3017;
 
 app.get("/evaluate-commits", async (req, res) => {
   const username = req.query.username;
-  const score = await evaluateCommits(username, octokit);
+  const response = await evaluateCommits(username, octokit);
   // returns {score: number, example: string, link: string}
-  res.send(score.toString());
+  res.send(response);
 });
 
 // localhost:3000/evaluate-codes?username=kaleab-a
