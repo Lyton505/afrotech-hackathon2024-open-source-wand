@@ -95,7 +95,6 @@ async function getContentOfFile(owner, repo, path) {
       path: path
     });
 
-
     // Decode the content from Base64
     if (response.data.content) {
       const content = Buffer.from(response.data.content, 'base64').toString('utf8');
@@ -109,7 +108,30 @@ async function getContentOfFile(owner, repo, path) {
   }
 }
 
+async function getExamplesFromCode(code){
+  const delimiter = '@--@';
+  const prompt = "You are an expert code analyst. Given the following code, provide an example of a few lines from the code that best represent the programmer's performance in each of the following five aspects: 'Code Readability', 'Code Modularity', 'Variable Naming', 'Code Documentation and Commenting', and 'Code Efficiency'. Respond with a few lines of code for each aspect, separated by '" + delimiter + "'. No additional text besides the code examples. ";
+
+  let example = await getOpenAIScore(code, prompt); // TOOD: Check other LLMs
+
+  // Split the response into examples for each aspect
+  example = example.split(delimiter);
+
+  console.log("Example length: ", example.length);
+
+  return example;
+}
+
+async function getSummaryAboutProgrammer(code){
+  const prompt = "You are an expert code analyst. Given the following code, provide a summary of the programmer's quality based on the follwoing code. Keep the response concise to one paragraph.";
+
+  const summary = await getOpenAIScore(code, prompt); // TOOD: Check other LLMs
+
+  return summary;
+}
+
 async function evaluateCode(code){
+  const criteria = ['Code Readability', 'Code Modularity', 'Variable Naming', 'Code Documentation and Commenting', 'Code Efficiency'];
   const prompt = "Please assess the following code in the aspects of 'Code Readability', 'Code Modularity', 'Variable Naming', 'Code Documentation and Commenting', and 'Code Efficiency'. For each aspect, provide a score between 0 (terrible) and 100 (perfect). Respond only with five numbers, separated by spaces, with no additional text.";
   
   // TODO: Better prompting to get consistent scoring 
@@ -145,15 +167,24 @@ async function evaluateTheMostCommitedFile(owner, octokit) {
   console.log(mostCommitedFile);
 
   const fileContent = await getContentOfFile(owner, largerstRepo.name, mostCommitedFile);
-  console.log("File Content: ", fileContent);
+  // console.log("File Content: ", fileContent);
 
   const evaluation = await evaluateCode(fileContent);
   console.log("Evaluation: ", evaluation);
 
-  return evaluation;
+
+  let response = {
+    score: evaluation,
+    example: await getExamplesFromCode(fileContent),
+    link: [largerstRepo.html_url, largerstRepo.html_url, largerstRepo.html_url, largerstRepo.html_url, largerstRepo.html_url],
+    summary: await getSummaryAboutProgrammer(fileContent),
+    finalScore: evaluation.reduce((acc, score) => acc + score, 0) / evaluation.length
+  };
+
+  // console.log(response);
+  return response;
 }
 
-export { evaluateTheMostCommitedFile };
 
 
 // TESTING - To Be Commented Out
@@ -169,8 +200,8 @@ export { evaluateTheMostCommitedFile };
 
 // evaluateCode(fileContent);
 
-// evaluateTheMostCommitedFile('intiserp', octokit);
-
+// console.log(evaluateTheMostCommitedFile('intiserp', octokit));
 
 // fetchCommits('kaleab-a', 'socks-matching');
 
+export { evaluateTheMostCommitedFile };

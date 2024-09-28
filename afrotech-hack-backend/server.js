@@ -26,9 +26,9 @@ app.get("/evaluate-commits", async (req, res) => {
 app.get("/evaluate-codes", async (req, res) => {
   const owner = req.query.username;
   console.log(owner);
-  const score = await evaluateTheMostCommitedFile(owner, octokit);
+  const response = await evaluateTheMostCommitedFile(owner, octokit);
   // returns {score: [number, number, number, number, number], example: [string, string, string], link: [string, string, string], summary: string, finalScore: number}
-  res.send(score.toString());
+  res.send(response);
 });
 
 // localhost:3000
