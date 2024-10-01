@@ -80,7 +80,6 @@ function getLargestRepo(repositories) {
     return largest;
   }, null);
 
-  // If the user is popular, choose the repo with the most stars
   if (
     repoWithMostStarAndFork.stargazers_count >=
     POPULAR_PROGRAMMER_STARS_THRESHOLD
