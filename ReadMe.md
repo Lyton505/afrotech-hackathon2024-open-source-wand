@@ -3,6 +3,8 @@ Site deploy status: [![Netlify Status](https://api.netlify.com/api/v1/badges/8f3
 
 Link to live site(assuming LLM api's still have access to Lyton's funds): [Live site](https://open-source-wand.netlify.app/)
 
+Link to Youtube Demo: [Live demo](https://youtu.be/r7oQa1MlaEs)
+
 ## Inspiration
 When applying for internship or jobs, only your past experience is typically considered. Your personal projects may also be considered, but only when they are unique and impactful or creative. Open source contributions are often left out of the mix in all these considerations. We made Open Source Wand to help improve the software development skills of minorities in tech and help them get the recognition they deserve.
 
