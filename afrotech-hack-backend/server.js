@@ -1,4 +1,3 @@
-import * as data from "./data.js";
 import express from "express";
 import { octokit } from "./githubInterface.js";
 import { evaluateTheMostCommitedFile } from "./code-assessment.js";

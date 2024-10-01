@@ -1,206 +1,279 @@
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import RadarChart from "@/components/ui/radar_chart";
-import Categories from "@/components/Categories.tsx";
 import EvaluationTable from "@/components/EvaluationTable.tsx";
-import { infinity } from 'ldrs'
-
+import { infinity } from "ldrs";
 
 export default function Results() {
-    const defaultCodeExample = 'def hello():\n    print("Hello, World!")';
-    const defaultCommitExample = 'Fixed a bug in the code';
-    const defaultCodeLink = 'https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/screens/Results.tsx';
-    const defaultCommitLink = 'https://github.com/lyton505/afrotech-hack-backend/commit/1234567890abcdef';
-    const defaultSummary = "Lyton505 has demonstrated a strong proficiency in various aspects of coding. The evaluation highlights their exceptional code quality, with high scores in readability and minimal linting errors. Their code style is commendable, particularly in variable naming, code comments, and proper indentation/spacing. Lyton505 also adheres well to open source standards, providing meaningful commit messages. However, there are areas that need improvement. The overall impact of their code could be enhanced, as the commit frequency is lower than desired and not all commits are merged. Additionally, there is room for growth in contributing to more diverse open source projects. This summary underscores both Lyton505's strengths and areas for further development."
+  const defaultCodeExample = 'def hello():\n    print("Hello, World!")';
+  const defaultCommitExample = "Fixed a bug in the code";
+  const defaultCodeLink =
+    "https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/screens/Results.tsx";
+  const defaultCommitLink =
+    "https://github.com/lyton505/afrotech-hack-backend/commit/1234567890abcdef";
+  const defaultSummary =
+    "Lyton505 has demonstrated a strong proficiency in various aspects of coding. The evaluation highlights their exceptional code quality, with high scores in readability and minimal linting errors. Their code style is commendable, particularly in variable naming, code comments, and proper indentation/spacing. Lyton505 also adheres well to open source standards, providing meaningful commit messages. However, there are areas that need improvement. The overall impact of their code could be enhanced, as the commit frequency is lower than desired and not all commits are merged. Additionally, there is room for growth in contributing to more diverse open source projects. This summary underscores both Lyton505's strengths and areas for further development.";
 
-    const defaultScore = 68;
+  // const defaultScore = 68;
 
-    const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
 
-    const [commitEvaluation, setCommitEvaluation] = useState({
-        score: 0,
-        example: defaultCommitExample,
-        link: defaultCommitLink
-    });
+  const [, setCommitEvaluation] = useState({
+    score: 0,
+    example: defaultCommitExample,
+    link: defaultCommitLink,
+  });
 
-    const [codeEvaluation, setCodeEvaluation] = useState({
-        // readability, modularity, naming, comments, spacing
-        score: [0, 0, 0, 0, 0],
-        example: [defaultCodeExample, defaultCodeExample, defaultCodeExample, defaultCodeExample, defaultCodeExample],
-        link: [defaultCodeLink, defaultCodeLink, defaultCodeLink, defaultCodeLink, defaultCodeLink],
-        summary: defaultSummary,
-        finalScore: -1
-    });
+  const [codeEvaluation, setCodeEvaluation] = useState({
+    // readability, modularity, naming, comments, spacing
+    score: [0, 0, 0, 0, 0],
+    example: [
+      defaultCodeExample,
+      defaultCodeExample,
+      defaultCodeExample,
+      defaultCodeExample,
+      defaultCodeExample,
+    ],
+    link: [
+      defaultCodeLink,
+      defaultCodeLink,
+      defaultCodeLink,
+      defaultCodeLink,
+      defaultCodeLink,
+    ],
+    summary: defaultSummary,
+    finalScore: -1,
+  });
 
+  const location = useLocation();
 
-    const location = useLocation();
+  const [qualityInfo, setQualityInfo] = useState({});
 
-    const [qualityInfo, setQualityInfo] = useState({});
+  const [styleInfo, setStyleInfo] = useState({});
 
-    const [styleInfo, setStyleInfo] = useState({});
+  const [impactInfo, setImpactInfo] = useState({});
 
-    const [impactInfo, setImpactInfo] = useState({});
+  const [standardsInfo, setStandardsInfo] = useState({});
 
-    const [standardsInfo, setStandardsInfo] = useState({});
+  useEffect(() => {
+    // console.log("location: ", location);
+    // console.log("username: ", username);
 
+    // console.log("location.search: ", location.search);
 
-    useEffect(() => {
-        // console.log("location: ", location);
-        // console.log("username: ", username);
+    const searchParams = new URLSearchParams(location.search);
+    const usernameParam = searchParams.get("username");
 
-        // console.log("location.search: ", location.search);
+    if (usernameParam) {
+      setUsername(usernameParam);
+      // console.log("Username set to: ", usernameParam);
 
+      const runCodeEvaluation = async () => {
+        const urlBase = "http://localhost:3000/";
 
-        const searchParams = new URLSearchParams(location.search);
-        const usernameParam = searchParams.get('username');
+        const codeEvaluationResponse = await fetch(
+          urlBase + "evaluate-codes?username=" + usernameParam,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
 
-        if (usernameParam) {
-            setUsername(usernameParam);
-            // console.log("Username set to: ", usernameParam);
+        const commitEvaluationResponse = await fetch(
+          urlBase + "evaluate-commits?username=" + usernameParam,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
 
-            const runCodeEvaluation = async () => {
-                const urlBase = "http://localhost:3000/";
+        const codeEvaluationData = await codeEvaluationResponse.json();
+        const commitEvaluationData = await commitEvaluationResponse.json();
 
-                const codeEvaluationResponse = await fetch(urlBase + 'evaluate-codes?username=' + usernameParam, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
+        setCodeEvaluation(codeEvaluationData);
+        setCommitEvaluation(commitEvaluationData);
+      };
 
-                const commitEvaluationResponse = await fetch(urlBase + 'evaluate-commits?username=' + usernameParam, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
+      runCodeEvaluation();
+    }
+  }, []);
 
-                const codeEvaluationData = await codeEvaluationResponse.json();
-                const commitEvaluationData = await commitEvaluationResponse.json();
+  const getAverageScore = (scores: number[]) => {
+    return (
+      scores.reduce((acc, curr) => {
+        return acc + curr;
+      }, 0) / scores.length
+    );
+  };
 
-                setCodeEvaluation(codeEvaluationData);
-                setCommitEvaluation(commitEvaluationData);
-            }
+  useEffect(() => {
+    infinity.register();
 
-            runCodeEvaluation();
-        }
+    if (codeEvaluation) {
+      // console.log("codeEvaluation: ", codeEvaluation.score);
 
-    }, []);
+      const readability = codeEvaluation.score[0];
+      const modularity = codeEvaluation.score[1];
+      const naming = codeEvaluation.score[2];
+      const comments = codeEvaluation.score[3];
+      const spacing = codeEvaluation.score[4];
 
-    const getAverageScore = (scores: number[]) => {
-        return scores.reduce((acc, curr) => {
-          return acc + curr;
-        }, 0) / scores.length;
-    };
+      // console.log("Readability and modularity: ", getAverageScore([readability, modularity]));
+      // console.log("Naming, comments, spacing: ", getAverageScore([naming, comments, spacing]));
 
-    useEffect(() => {
-        infinity.register()
+      const qualityAvgScore = getAverageScore([
+        readability,
+        modularity,
+      ]).toFixed(2);
+      const styleAvgScore = getAverageScore([
+        naming,
+        comments,
+        spacing,
+      ]).toFixed(2);
 
-        if (codeEvaluation) {
-            // console.log("codeEvaluation: ", codeEvaluation.score);
+      setQualityInfo({
+        avgScore: qualityAvgScore,
+        props: [
+          {
+            readability: readability,
+            example: codeEvaluation.example[0],
+            link: codeEvaluation.link[0],
+          },
+          {
+            modularity: modularity,
+            example: codeEvaluation.example[1],
+            link: codeEvaluation.link[1],
+          },
+        ],
+      });
 
-            const readability = codeEvaluation.score[0];
-            const modularity = codeEvaluation.score[1];
-            const naming = codeEvaluation.score[2];
-            const comments = codeEvaluation.score[3];
-            const spacing = codeEvaluation.score[4];
+      setStyleInfo({
+        avgScore: styleAvgScore,
+        props: [
+          {
+            naming: naming,
+            example: codeEvaluation.example[2],
+            link: codeEvaluation.link[2],
+          },
+          {
+            comments: comments,
+            example: codeEvaluation.example[3],
+            link: codeEvaluation.link[3],
+          },
+          {
+            spacing: spacing,
+            example: codeEvaluation.example[4],
+            link: codeEvaluation.link[4],
+          },
+        ],
+      });
 
-            // console.log("Readability and modularity: ", getAverageScore([readability, modularity]));
-            // console.log("Naming, comments, spacing: ", getAverageScore([naming, comments, spacing]));
+      setImpactInfo({
+        // avgScore: getAverageScore([codeEvaluation.score[2], codeEvaluation.score[3]]),
+        avgScore: 50,
+        props: [
+          {
+            frequency: 30,
+            example: defaultCommitExample,
+            link: defaultCommitLink,
+          },
+          { stars: 3, example: defaultCodeExample, link: defaultCodeLink },
+        ],
+      });
 
-            const qualityAvgScore = getAverageScore([readability, modularity]).toFixed(2);
-            const styleAvgScore = getAverageScore([naming, comments, spacing]).toFixed(2);
+      setStandardsInfo({
+        // avgScore: getAverageScore([codeEvaluation.score[4]]),
+        avgScore: 20,
+        props: [
+          {
+            commits: codeEvaluation.score[4],
+            example: codeEvaluation.example[4],
+            link: codeEvaluation.link[4],
+          },
+        ],
+      });
+    }
+  }, [codeEvaluation]);
 
-            setQualityInfo({
-                avgScore: qualityAvgScore,
-                props: [
-                    { readability: readability, example: codeEvaluation.example[0], link: codeEvaluation.link[0] },
-                    { modularity: modularity, example: codeEvaluation.example[1], link: codeEvaluation.link[1] },
-                ]
-            });
+  const displayObj = (
+    <div className={"flex flex-col gap-16"}>
+      <div className="flex gap-4 flex-col justify-between h-full">
+        {/*contains user header*/}
+        <div className="flex flex-col">
+          <h1 className="text-xl font-bold">Results</h1>
+          <h2 className="text-base">Username: {username}</h2>
+          <h2 className="text-base">
+            Wizard rating:{" "}
+            {parseFloat(String(codeEvaluation.finalScore)).toFixed(2)} Oz
+          </h2>
+        </div>
 
-            setStyleInfo({
-                avgScore: styleAvgScore,
-                props: [
-                    { naming: naming, example: codeEvaluation.example[2], link: codeEvaluation.link[2] },
-                    { comments: comments, example: codeEvaluation.example[3], link: codeEvaluation.link[3] },
-                    { spacing: spacing, example: codeEvaluation.example[4], link: codeEvaluation.link[4] },
-                ]
-            });
+        {/*contains summary*/}
+        <div className="flex flex-col gap-4 items-left">
+          <h2 className="text-xl font-bold">Summary</h2>
+          <p className="text-left text-base text-pretty">
+            {codeEvaluation.summary}
+          </p>
+        </div>
+      </div>
 
-            setImpactInfo({
-                // avgScore: getAverageScore([codeEvaluation.score[2], codeEvaluation.score[3]]),
-                avgScore: 50,
-                props: [
-                    { frequency: 30, example: defaultCommitExample, link: defaultCommitLink },
-                    { stars: 3, example: defaultCodeExample, link: defaultCodeLink },
-                ]
-            });
+      <div className={"h-full"}>
+        <h1 className="text-xl font-bold">Skills Overview</h1>
+        <RadarChart
+          username={username}
+          styleScore={codeEvaluation.score[0]}
+          qualityScore={codeEvaluation.score[1]}
+          impactScore={codeEvaluation.score[2]}
+          standardsScore={codeEvaluation.score[3]}
+        />
+      </div>
 
-            setStandardsInfo({
-                // avgScore: getAverageScore([codeEvaluation.score[4]]),
-                avgScore: 20,
-                props: [
-                    { commits: codeEvaluation.score[4], example: codeEvaluation.example[4], link: codeEvaluation.link[4] },
-                ]
-            });
-        }
-    }, [codeEvaluation]);
-
-    const displayObj = (
-        <div className={"flex flex-col gap-16"}>
-            <div className="flex gap-4 flex-col justify-between h-full">
-                {/*contains user header*/}
-                <div className="flex flex-col">
-                    <h1 className="text-xl font-bold">Results</h1>
-                    <h2 className="text-base">Username: {username}</h2>
-                    <h2 className="text-base">Wizard rating: {parseFloat(codeEvaluation.finalScore).toFixed(2)} Oz</h2>
-                </div>
-
-                {/*contains summary*/}
-                <div className="flex flex-col gap-4 items-left">
-                    <h2 className="text-xl font-bold">Summary</h2>
-                    <p className="text-left text-base text-pretty">{codeEvaluation.summary}</p>
-                </div>
-            </div>
-
-            <div className={"h-full"}>
-                <h1 className="text-xl font-bold">Skills Overview</h1>
-                <RadarChart username={username} styleScore={codeEvaluation.score[0]} qualityScore={codeEvaluation.score[1]} impactScore={codeEvaluation.score[2]} standardsScore={codeEvaluation.score[3]}/>
-            </div>
-            
-            {/* <div>
+      {/* <div>
                 <h2 className="text-xl font-bold">Categories</h2>
                 <Categories/>
             </div> */}
 
-            <div>
-                <h2 className="text-xl font-bold">Evaluation table</h2>
-                <EvaluationTable qualityInfo={qualityInfo} styleInfo={styleInfo} impactInfo={impactInfo} standardsInfo={standardsInfo} finalScore={codeEvaluation.finalScore}/>
-            </div>
-        </div>
-    );
+      <div>
+        <h2 className="text-xl font-bold">Evaluation table</h2>
+        <EvaluationTable
+          qualityInfo={qualityInfo}
+          styleInfo={styleInfo}
+          impactInfo={impactInfo}
+          standardsInfo={standardsInfo}
+          finalScore={codeEvaluation.finalScore}
+        />
+      </div>
+    </div>
+  );
 
-    return (
-        <>
-            { codeEvaluation.finalScore !== -1 ? (
-                <>
-                    {displayObj}
-                </>
-            ) : (
-                // Default values shown
-                <div className={"flex flex-1 justify-center flex-col gap-10 items-center align-middle h-screen"}>
-                    <div className="text-base font-bold text-center">Getting your results...</div>
-                    <l-infinity
-                    size="50"
-                        stroke="4"
-                        stroke-length="0.15"
-                        bg-opacity="0.1"
-                        speed="1.5" 
-                        color="black" 
-                        ></l-infinity>
-                </div>
-            )}
-        </>
-    );
+  return (
+    <>
+      {codeEvaluation.finalScore !== -1 ? (
+        <>{displayObj}</>
+      ) : (
+        // Default values shown
+        <div
+          className={
+            "flex flex-1 justify-center flex-col gap-10 items-center align-middle h-screen"
+          }
+        >
+          <div className="text-base font-bold text-center">
+            Getting your results...
+          </div>
+          <l-infinity
+            size="50"
+            stroke="4"
+            stroke-length="0.15"
+            bg-opacity="0.1"
+            speed="1.5"
+            color="black"
+          ></l-infinity>
+        </div>
+      )}
+    </>
+  );
 }
