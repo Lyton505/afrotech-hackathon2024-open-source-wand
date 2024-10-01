@@ -10,7 +10,7 @@ const MAX_COMMITS_PROCESSED = 50; // TODO: Dont know if this is the most recent 
 const CODE_FILE_EXTENSIONS = [".c", ".cpp", ".cxx", ".cc", ".C", ".h", ".hpp", ".hxx", ".hh", ".cs", ".java", ".js", ".ts",
                               ".py", ".rb", ".php", ".swift", ".kt", ".kts", ".go", ".rs", ".pl", ".pm", ".scala", ".ex", 
                               ".exs", ".clj", ".cljs", ".cljc", ".edn", ".dart", ".m", ".mm", ".hs", ".lhs", ".lua", ".sh", 
-                              ".bash", ".ps1", ".sql", ".html", ".htm", ".css", ".xml", ".json", ".yaml", ".yml", ".m", ".R", 
+                              ".bash", ".ps1", ".sql",  ".m", ".R", 
                               ".r", ".groovy", ".gvy", ".gy", ".gsh", ".vb", ".asm", ".s", ".f", ".for", ".f90", ".f95"];
 const CODE_LINES_LIMIT = 1000;
 
@@ -30,7 +30,7 @@ async function fetchCommits(owner, repo) {
     page++;
   } while (lastResponse.data.length === 100);  // Assumes pagination, adjust as necessary
 
-  console.log('Fetched commits:', commits.length);
+  // console.log('Fetched commits:', commits.length);
   return commits;
 }
 
@@ -117,7 +117,7 @@ async function getExamplesFromCode(code){
   // Split the response into examples for each aspect
   example = example.split(delimiter);
 
-  console.log("Example length: ", example.length);
+  // console.log("Example length: ", example.length);
 
   return example;
 }
@@ -161,16 +161,16 @@ async function evaluateCode(code){
  */
 async function evaluateTheMostCommitedFile(owner, octokit) {
   const largerstRepo = await getUserLargestRepo(owner, octokit);
-  console.log(largerstRepo.full_name);
+  // console.log(largerstRepo.full_name);
 
   const mostCommitedFile = await findMostCommittedFile(owner, largerstRepo.name);
-  console.log(mostCommitedFile);
+  // console.log(mostCommitedFile);
 
   const fileContent = await getContentOfFile(owner, largerstRepo.name, mostCommitedFile);
   // console.log("File Content: ", fileContent);
 
   const evaluation = await evaluateCode(fileContent);
-  console.log("Evaluation: ", evaluation);
+  // console.log("Evaluation: ", evaluation);
 
 
   let response = {

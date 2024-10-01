@@ -20,14 +20,14 @@ export default function EvaluationTable({qualityInfo, styleInfo, impactInfo, sta
         {
           name: "Readability",
           sample:qualityInfo.props[0].example,
-          score: qualityInfo.props[0].readability,
+          score: parseFloat(qualityInfo.props[0].readability).toFixed(2),
           link: qualityInfo.props[0].link,
         },
         {
           name: "Function modularity",
           sample:
             qualityInfo.props[1].example,
-          score: qualityInfo.props[1].modularity,
+          score: parseFloat(qualityInfo.props[1].modularity).toFixed(2),
           link: qualityInfo.props[1].link,
         },
       ],
@@ -40,21 +40,21 @@ export default function EvaluationTable({qualityInfo, styleInfo, impactInfo, sta
           name: "Variable naming",
           sample:
             styleInfo.props[0].example,
-          score: styleInfo.props[0].naming,
+          score: parseFloat(styleInfo.props[0].naming).toFixed(2),
           link: styleInfo.props[0].link,
         },
         {
           name: "Code comments",
           sample:
             styleInfo.commentsSample,
-          score: styleInfo.props[1].comments,
+          score: parseFloat(styleInfo.props[1].comments).toFixed(2),
           link: styleInfo.props[1].link,
         },
         {
           name: "Indentation/Spacing",
           sample:
             styleInfo.spacingSample,
-          score: styleInfo.props[2].spacing,
+          score: parseFloat(styleInfo.props[2].spacing).toFixed(2),
           link: styleInfo.props[2].link,
         },
       ],
@@ -66,7 +66,7 @@ export default function EvaluationTable({qualityInfo, styleInfo, impactInfo, sta
         {
           name: "Meaningful commit messages",
           sample: standardsInfo.props[0].example,
-          score: standardsInfo.props[0].commits,
+          score: parseFloat(standardsInfo.props[0].commits).toFixed(2),
           link: standardsInfo.props[0].link,
         },
       ],
@@ -165,7 +165,7 @@ export default function EvaluationTable({qualityInfo, styleInfo, impactInfo, sta
             Weighted Total
           </TableCell>
           <TableCell className="text-right font-bold text-lg">
-            {finalScore} / 100
+            {finalScore.toFixed(2)} / 100
           </TableCell>
         </TableRow>
       </TableFooter>

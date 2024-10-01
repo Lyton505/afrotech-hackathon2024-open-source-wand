@@ -13,7 +13,7 @@ export default function Loading() {
         setTimeout(() => {
             setIsLoading(false);
             navigate(`/results?username=${encodeURIComponent(username || '')}`);
-        }, 2000);
+        }, 0);
     }, [navigate, location]);
 
     return (

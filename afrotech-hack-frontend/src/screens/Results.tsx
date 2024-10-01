@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import RadarChart from "@/components/ui/radar_chart";
 import Categories from "@/components/Categories.tsx";
 import EvaluationTable from "@/components/EvaluationTable.tsx";
+import { infinity } from 'ldrs'
+
 
 export default function Results() {
     const defaultCodeExample = 'def hello():\n    print("Hello, World!")';
@@ -11,7 +13,7 @@ export default function Results() {
     const defaultCommitLink = 'https://github.com/lyton505/afrotech-hack-backend/commit/1234567890abcdef';
     const defaultSummary = "Lyton505 has demonstrated a strong proficiency in various aspects of coding. The evaluation highlights their exceptional code quality, with high scores in readability and minimal linting errors. Their code style is commendable, particularly in variable naming, code comments, and proper indentation/spacing. Lyton505 also adheres well to open source standards, providing meaningful commit messages. However, there are areas that need improvement. The overall impact of their code could be enhanced, as the commit frequency is lower than desired and not all commits are merged. Additionally, there is room for growth in contributing to more diverse open source projects. This summary underscores both Lyton505's strengths and areas for further development."
 
-    const defaultScore = 67;
+    const defaultScore = 68;
 
     const [username, setUsername] = useState('');
 
@@ -23,11 +25,11 @@ export default function Results() {
 
     const [codeEvaluation, setCodeEvaluation] = useState({
         // readability, modularity, naming, comments, spacing
-        score: [10, 20, 30, 100, 60],
+        score: [0, 0, 0, 0, 0],
         example: [defaultCodeExample, defaultCodeExample, defaultCodeExample, defaultCodeExample, defaultCodeExample],
         link: [defaultCodeLink, defaultCodeLink, defaultCodeLink, defaultCodeLink, defaultCodeLink],
         summary: defaultSummary,
-        finalScore: defaultScore
+        finalScore: -1
     });
 
 
@@ -43,47 +45,47 @@ export default function Results() {
 
 
     useEffect(() => {
+        // console.log("location: ", location);
+        // console.log("username: ", username);
+
+        // console.log("location.search: ", location.search);
+
+
         const searchParams = new URLSearchParams(location.search);
         const usernameParam = searchParams.get('username');
+
         if (usernameParam) {
             setUsername(usernameParam);
+            // console.log("Username set to: ", usernameParam);
+
+            const runCodeEvaluation = async () => {
+                const urlBase = "http://localhost:3000/";
+
+                const codeEvaluationResponse = await fetch(urlBase + 'evaluate-codes?username=' + usernameParam, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                const commitEvaluationResponse = await fetch(urlBase + 'evaluate-commits?username=' + usernameParam, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                const codeEvaluationData = await codeEvaluationResponse.json();
+                const commitEvaluationData = await commitEvaluationResponse.json();
+
+                setCodeEvaluation(codeEvaluationData);
+                setCommitEvaluation(commitEvaluationData);
+            }
+
+            runCodeEvaluation();
         }
 
-        // Call the 2 API endpoints here
-        // Set the state with the results
-        // Use the state to render the components
-
-
-        const runCodeEvaluation = async () => {
-            const codeEvaluationResponse = await fetch('/mock-evaluate-codes', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username: username })
-            });
-
-            const commitEvaluationResponse = await fetch('/mock-evaluate-commits', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username: username })
-            });
-
-            const codeEvaluationData = await codeEvaluationResponse.json();
-            const commitEvaluationData = await commitEvaluationResponse.json();
-
-            setCodeEvaluation(codeEvaluationData);
-            setCommitEvaluation(commitEvaluationData);
-        }
-
-        runCodeEvaluation();
-        // console.log("codeEvaluation: ", codeEvaluation);
-        // console.log("commitEvaluation: ", commitEvaluation);
-        
-
-    }, [location]);
+    }, []);
 
     const getAverageScore = (scores: number[]) => {
         return scores.reduce((acc, curr) => {
@@ -92,8 +94,10 @@ export default function Results() {
     };
 
     useEffect(() => {
+        infinity.register()
+
         if (codeEvaluation) {
-            console.log("codeEvaluation: ", codeEvaluation.score);
+            // console.log("codeEvaluation: ", codeEvaluation.score);
 
             const readability = codeEvaluation.score[0];
             const modularity = codeEvaluation.score[1];
@@ -101,11 +105,11 @@ export default function Results() {
             const comments = codeEvaluation.score[3];
             const spacing = codeEvaluation.score[4];
 
-            console.log("Readability and modularity: ", getAverageScore([readability, modularity]));
-            console.log("Naming, comments, spacing: ", getAverageScore([naming, comments, spacing]));
+            // console.log("Readability and modularity: ", getAverageScore([readability, modularity]));
+            // console.log("Naming, comments, spacing: ", getAverageScore([naming, comments, spacing]));
 
-            const qualityAvgScore = getAverageScore([readability, modularity]).toFixed(0);
-            const styleAvgScore = getAverageScore([naming, comments, spacing]).toFixed(0);
+            const qualityAvgScore = getAverageScore([readability, modularity]).toFixed(2);
+            const styleAvgScore = getAverageScore([naming, comments, spacing]).toFixed(2);
 
             setQualityInfo({
                 avgScore: qualityAvgScore,
@@ -150,7 +154,7 @@ export default function Results() {
                 <div className="flex flex-col">
                     <h1 className="text-xl font-bold">Results</h1>
                     <h2 className="text-base">Username: {username}</h2>
-                    <h2 className="text-base">Wizard rating: {codeEvaluation.finalScore} Oz</h2>
+                    <h2 className="text-base">Wizard rating: {parseFloat(codeEvaluation.finalScore).toFixed(2)} Oz</h2>
                 </div>
 
                 {/*contains summary*/}
@@ -179,10 +183,23 @@ export default function Results() {
 
     return (
         <>
-            {qualityInfo && Object.keys(qualityInfo).length > 0 && (
+            { codeEvaluation.finalScore !== -1 ? (
                 <>
                     {displayObj}
                 </>
+            ) : (
+                // Default values shown
+                <div className={"flex flex-1 justify-center flex-col gap-10 items-center align-middle h-screen"}>
+                    <div className="text-base font-bold text-center">Getting your results...</div>
+                    <l-infinity
+                    size="50"
+                        stroke="4"
+                        stroke-length="0.15"
+                        bg-opacity="0.1"
+                        speed="1.5" 
+                        color="black" 
+                        ></l-infinity>
+                </div>
             )}
         </>
     );

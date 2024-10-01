@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState, useRef } from "react"
 import { LoadingButton } from "./ui/loading_button"
+import { infinity } from "ldrs"
 
 
 const formSchema = z.object({
@@ -25,13 +26,7 @@ const formSchema = z.object({
 
 export function ProfileForm() {
     const [username, setUsername] = useState("");
-    const usernameRef = useRef(username);
-
-    useEffect(() => {
-        usernameRef.current = username;
-
-        
-    }, [username]);
+    const [isUsernameValid, setIsUsernameValid] = useState(false);
 
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
@@ -41,18 +36,41 @@ export function ProfileForm() {
         },
     })
 
+    // verify username using api
+    useEffect(() => {
+        const verifyUsername = async (username: string) => {
+            const response = await fetch(`http://localhost:3000/user?username=${username}`);
+            const data = await response.json();
+            console.log("Data from verifyUsername on user ", username, ": ", data);
+            setIsUsernameValid(data);
+            if (data === true) {
+                console.log("Username is valid");
+                setIsLoading(true);
+                setTimeout(() => {
+                    setIsLoading(false);
+                    window.location.href = `/loading?username=${encodeURIComponent(username)}`;
+                }, 2000);
+            }
+        } 
+
+        const checkUsername = async () => {
+            await verifyUsername(username);
+        }
+        checkUsername(); // Invoke the async function
+    }, [username]);
+
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log("Running in development mode");
+
+        // console.log("Running in development mode");
         console.log("Values:", values);
-        setUsername(values.username);
-        setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            console.log("Waiting for 5 seconds");
-            window.location.href = `/loading?username=${encodeURIComponent(values.username)}`;
-            console.log("Redirected to loading page");
-        }, 2000);
+        const currentUsername = values.username;
+
+        setUsername(currentUsername);
+
+        if (!isUsernameValid) {
+            return;
+        }
     }
 
     const [isLoading, setIsLoading] = useState(false)

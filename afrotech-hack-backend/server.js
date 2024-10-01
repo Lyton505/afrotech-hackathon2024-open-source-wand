@@ -3,6 +3,8 @@ import express from "express";
 import { octokit } from "./githubInterface.js";
 import { evaluateTheMostCommitedFile } from "./code-assessment.js";
 import { evaluateCommits } from "./evaluate-commits.js";
+import cors from 'cors';
+import { checkUser } from "./githubInterface.js";
 
 // interface codeEvaluationResponse {
 //   score: number[5];
@@ -19,6 +21,7 @@ import { evaluateCommits } from "./evaluate-commits.js";
 // }
 
 const app = express();
+app.use(cors());
 const port = 3000;
 
 app.use(express.json());
@@ -36,12 +39,25 @@ app.get("/evaluate-commits", async (req, res) => {
   res.send(response);
 });
 
+app.get("/user", async (req, res) => {
+  const username = req.query.username;
+
+  if (!username || username === "") {
+    res.send(false);
+    return;
+  }
+
+  const response = await checkUser(username, octokit);
+  console.log("Response from checkUser in server.js on user ", username, ": ", response);
+  res.send(response);
+});
+
 app.get("/mock-evaluate-commits", async (req, res) => {
   const username = req.query.username;
   // const score = await evaluateCommits(username, octokit);
   // returns {score: number, example: string, link: string}
-  console.log("Mocked evaluate commits");
-  console.log("username", username);
+  // console.log("username", username);
+  // console.log("Mocked evaluate commits");
 
 
   setTimeout(() => {res.send({
@@ -55,7 +71,7 @@ app.get("/mock-evaluate-commits", async (req, res) => {
 // localhost:3000/evaluate-codes?username=kaleab-a
 app.get("/evaluate-codes", async (req, res) => {
   const owner = req.query.username;
-  console.log(owner);
+  // console.log(owner);
   const response = await evaluateTheMostCommitedFile(owner, octokit);
   // returns {score: [number, number, number, number, number], example: [string, string, string], link: [string, string, string], summary: string, finalScore: number}
   res.send(response);
@@ -63,7 +79,7 @@ app.get("/evaluate-codes", async (req, res) => {
 
 app.get("/mock-evaluate-codes", async (req, res) => {
   const owner = req.query.username;
-  console.log("Mocked evaluate codes");
+  // console.log("Mocked evaluate codes");
   // const score = await evaluateTheMostCommitedFile(owner, octokit);
   // returns {score: [number, number, number, number, number], example: [string, string, string], link: [string, string, string], summary: string, finalScore: number}
 

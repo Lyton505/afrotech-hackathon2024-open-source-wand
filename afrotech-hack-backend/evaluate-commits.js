@@ -2,8 +2,6 @@ import dotenv from "dotenv";
 import getOpenAIScore from "./openai-interface.js";
 import getClaudeCommitScore from "./claude-interface.js";
 import getGeminiCommitScore from "./gemini-interface.js";
-import { octokit, checkUser, getUserLargestRepo } from "./githubInterface.js";
-import { response } from "express";
 
 dotenv.config();
 
