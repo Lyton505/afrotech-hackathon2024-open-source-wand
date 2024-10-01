@@ -1,12 +1,14 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 
 interface TeamMember {
   name: string;
   picture: string;
   github: string;
   linkedin: string;
+  website: string;
   description: string;
 }
 
@@ -16,13 +18,15 @@ const teamMembers: TeamMember[] = [
     picture: "https://lyton.dev/logo-trans.png",
     github: "https://github.com/Lyton505",
     linkedin: "https://www.linkedin.com/in/lytonmhlanga/",
+    website: "https://lyton.dev",
     description: "Lyton is a sophomore at Vanderbilt University, studying Computer Science. He is passionate about spoken languages and human-computer interactions. Lyton is currently working on a language learning app for African languages and other minority languages. He also enjoys playing/watching soccer(Go Gunners)"
   },
   {
     name: "Kaleab",
     picture: "/kaleab.jpeg",
-    github: "https://github.com/Kaleab-Azeze",
+    github: "https://github.com/Kaleab-A",
     linkedin: "https://www.linkedin.com/in/kaleab-azezew/",
+    website: "https://www.linkedin.com/in/kaleab-azezew/",
     description: "Kaleab is a sophomore at Vanderbilt University, studying Computer Science, with a burning passion for learning how the human brain works. His interests have led him to pursue a career in AI and quantitative finance. He loves chess and challenging Lyton in 200m races(Lyton is faster though)"
   }
 ];
@@ -48,6 +52,11 @@ const AboutUs: React.FC = () => {
                   <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
                     <FontAwesomeIcon icon={faLinkedin} size="lg" />
                   </a>
+                  {member.website && (
+                    <a href={member.website} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
+                      <FontAwesomeIcon icon={faGlobe} size="lg" />
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
