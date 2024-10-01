@@ -19,7 +19,7 @@ export default function RadarChart({username, styleScore, qualityScore, impactSc
         ],
         datasets: [{
           label: 'Torvalds',
-          data: [65, 59, 90, 81],
+          data: [86, 92, 90, 81],
           fill: false,
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgb(255, 99, 132)',

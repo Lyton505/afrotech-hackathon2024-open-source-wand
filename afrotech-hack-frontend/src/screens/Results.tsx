@@ -154,7 +154,7 @@ export default function Results() {
                 <div className="flex flex-col">
                     <h1 className="text-xl font-bold">Results</h1>
                     <h2 className="text-base">Username: {username}</h2>
-                    <h2 className="text-base">Wizard rating: {parseFloat(codeEvaluation.finalScore).toFixed(2)} Oz</h2>
+                    <h2 className="text-base">Wizard rating: {parseFloat(codeEvaluation.finalScore - 20).toFixed(2)} Oz</h2> {/* 20 TODO */} 
                 </div>
 
                 {/*contains summary*/}

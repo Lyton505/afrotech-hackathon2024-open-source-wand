@@ -33,7 +33,7 @@ export default function EvaluationTable({qualityInfo, styleInfo, impactInfo, sta
       ],
     },
     {
-      metric: "Code Style",
+      metric: "Code Style & Open source standards",
       score: styleInfo.avgScore,
       criteria: [
         {
@@ -44,28 +44,8 @@ export default function EvaluationTable({qualityInfo, styleInfo, impactInfo, sta
           link: styleInfo.props[0].link,
         },
         {
-          name: "Code comments",
-          sample:
-            styleInfo.commentsSample,
-          score: parseFloat(styleInfo.props[1].comments).toFixed(2),
-          link: styleInfo.props[1].link,
-        },
-        {
-          name: "Indentation/Spacing",
-          sample:
-            styleInfo.spacingSample,
-          score: parseFloat(styleInfo.props[2].spacing).toFixed(2),
-          link: styleInfo.props[2].link,
-        },
-      ],
-    },
-    {
-      metric: "Open source standards",
-      score: impactInfo.avgScore,
-      criteria: [
-        {
           name: "Meaningful commit messages",
-          sample: standardsInfo.props[0].example,
+          sample: "Add files via upload\nAdd files via upload\nfirst-commit",
           score: parseFloat(standardsInfo.props[0].commits).toFixed(2),
           link: standardsInfo.props[0].link,
         },
@@ -77,14 +57,14 @@ export default function EvaluationTable({qualityInfo, styleInfo, impactInfo, sta
       criteria: [
         {
           name: "Stars",
-          score: impactInfo.props[1].stars,
-          sample: "n/a",
+          score: 2,
+          sample: "2 stars",
           link: "https://github.com/lyton505/afrotech-hack-frontend/",
         },
         {
           name: "Commit frequency",
-          score: 90,
-          sample: `${impactInfo.props[0].frequency}% of total commits in largest repo`,
+          score: 41,
+          sample: `6 commits in the last week`,
           link: "https://github.com/lyton505/afrotech-hack-frontend/blob/main/src/components/EvaluationTable.tsx",
         },
       ],

@@ -2,7 +2,6 @@ import path from "path"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
-// https://vitejs.dev/config/ + shadcn config
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -10,5 +9,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-})
-
+  server: {
+    port: 3012 // Set your desired port here
+  }
+});
