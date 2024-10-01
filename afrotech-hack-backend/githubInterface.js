@@ -36,7 +36,21 @@ async function checkUser(username, octokit) {
  * @returns {Promise<Object>} - A promise that resolves to the list of repositories.
  */
 async function getAllRepos(username, octokit) {
-  return await octokit.rest.repos.listForUser({ username });
+  try {
+    // Fetch all repositories for the user
+    const repos = await octokit.rest.repos.listForUser({
+      username: username,
+      per_page: 100 // Fetch up to 100 repositories per page
+    });
+
+    // Filter out forked repositories
+    const nonForkedRepos = repos.data.filter(repo => !repo.fork);
+
+    return nonForkedRepos;
+  } catch (error) {
+    console.error('Error fetching repositories:', error);
+    return []; // Return an empty array in case of error
+  }
 }
 
 /**
@@ -48,7 +62,7 @@ async function getAllRepos(username, octokit) {
  */
 async function getUserLargestRepo(username, octokit) {
   const repos = await getAllRepos(username, octokit);
-  return getLargestRepo(repos.data);
+  return getLargestRepo(repos);
 }
 
 /**
@@ -68,6 +82,7 @@ export const getStars = (repo) => {
  * @returns {Object} - The largest repository object.
  */
 function getLargestRepo(repositories) {
+  console.log("Repositories: ", repositories);
   const repoWithMostStarAndFork = repositories.reduce((largest, repo) => {
     if (
       !largest ||
@@ -81,7 +96,7 @@ function getLargestRepo(repositories) {
   }, null);
 
   if (
-    repoWithMostStarAndFork.stargazers_count >=
+    repoWithMostStarAndFork != null && repoWithMostStarAndFork.stargazers_count >=
     POPULAR_PROGRAMMER_STARS_THRESHOLD
   ) {
     return repoWithMostStarAndFork;

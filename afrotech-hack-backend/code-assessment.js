@@ -6,13 +6,13 @@ import getOpenAIScore from "./openai-interface.js";
 import getClaudeCommitScore from "./claude-interface.js";
 import getGeminiCommitScore from "./gemini-interface.js";
 
-const MAX_COMMITS_PROCESSED = 50; // TODO: Dont know if this is the most recent 50 commits or the first 50 commits
+const MAX_COMMITS_PROCESSED = 20; // TODO: Dont know if this is the most recent 50 commits or the first 50 commits
+const MAX_FILE_CHECKS = 10;
 const CODE_FILE_EXTENSIONS = [".c", ".cpp", ".cxx", ".cc", ".C", ".h", ".hpp", ".hxx", ".hh", ".cs", ".java", ".js", ".ts",
                               ".py", ".rb", ".php", ".swift", ".kt", ".kts", ".go", ".rs", ".pl", ".pm", ".scala", ".ex", 
                               ".exs", ".clj", ".cljs", ".cljc", ".edn", ".dart", ".m", ".mm", ".hs", ".lhs", ".lua", ".sh", 
                               ".bash", ".ps1", ".sql",  ".m", ".R", 
                               ".r", ".groovy", ".gvy", ".gy", ".gsh", ".vb", ".asm", ".s", ".f", ".for", ".f90", ".f95"];
-const CODE_LINES_LIMIT = 1000;
 
 async function fetchCommits(owner, repo) {
   let commits = [];
@@ -28,7 +28,7 @@ async function fetchCommits(owner, repo) {
     });
     commits = commits.concat(lastResponse.data);
     page++;
-  } while (lastResponse.data.length === 100);  // Assumes pagination, adjust as necessary
+  } while (lastResponse.data.length === 100 && commits.length < MAX_COMMITS_PROCESSED);
 
   // console.log('Fetched commits:', commits.length);
   return commits;
@@ -42,6 +42,7 @@ async function fetchCommits(owner, repo) {
  */
 async function countFileChanges(owner, repo) {
   const commits = await fetchCommits(owner, repo);
+  console.log("Done fetchCommits");
   let fileChangeCounts = {};
   let cnt = 0;
 
@@ -52,7 +53,12 @@ async function countFileChanges(owner, repo) {
       ref: commit.sha
     });
 
+    let fileChecked = 0;
     for (const file of commitData.data.files) {
+      if (fileChecked > MAX_FILE_CHECKS) {
+        break;
+      }
+
       // Check if the file is a code file
       if (CODE_FILE_EXTENSIONS.includes(file.filename.slice(file.filename.lastIndexOf('.')))) {
         if (file.filename in fileChangeCounts) {
@@ -60,6 +66,7 @@ async function countFileChanges(owner, repo) {
         } else {
           fileChangeCounts[file.filename] = 1;
         }
+        fileChecked++;
       }
     }
 
@@ -74,6 +81,7 @@ async function countFileChanges(owner, repo) {
 
 async function findMostCommittedFile(owner, repo) { // TODO: Instead of getting only one file, get the top 5 most committed files
   const fileChangeCounts = await countFileChanges(owner, repo);
+  console.log("Done fileChangeCounts");
   let mostCommittedFile = '';
   let maxChanges = 0;
 
@@ -161,16 +169,17 @@ async function evaluateCode(code){
  */
 async function evaluateTheMostCommitedFile(owner, octokit) {
   const largerstRepo = await getUserLargestRepo(owner, octokit);
-  // console.log(largerstRepo.full_name);
+  console.log(largerstRepo.full_name);
+
 
   const mostCommitedFile = await findMostCommittedFile(owner, largerstRepo.name);
-  // console.log(mostCommitedFile);
+  console.log(mostCommitedFile);
 
   const fileContent = await getContentOfFile(owner, largerstRepo.name, mostCommitedFile);
   // console.log("File Content: ", fileContent);
 
   const evaluation = await evaluateCode(fileContent);
-  // console.log("Evaluation: ", evaluation);
+  console.log("Evaluation: ", evaluation);
 
 
   let response = {
@@ -184,24 +193,5 @@ async function evaluateTheMostCommitedFile(owner, octokit) {
   // console.log(response);
   return response;
 }
-
-
-
-// TESTING - To Be Commented Out
-// const mostCommitedFile = await findMostCommittedFile('ghemingway', 'cad.js');
-// const mostCommitedFile = await findMostCommittedFile('intiserp', 'donocode');
-// const mostCommitedFile = "1. Data Collection/Web/bing_images.py";
-
-// console.log(mostCommitedFile);
-
-// const fileContent = await getContentOfFile('kaleab-a', 'socks-matching', mostCommitedFile);
-
-// console.log(fileContent);
-
-// evaluateCode(fileContent);
-
-// console.log(evaluateTheMostCommitedFile('intiserp', octokit));
-
-// fetchCommits('kaleab-a', 'socks-matching');
 
 export { evaluateTheMostCommitedFile };

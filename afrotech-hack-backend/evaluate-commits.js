@@ -59,7 +59,8 @@ function calculateIterationAverageScore(scores) {
  */
 async function evaluateCommits(username, octokit) {
   const repo = await getUserLargestRepo(username, octokit);
-  console.log("Repo: ", repo.name);
+  console.log("Largest Repo: ", repo);
+
   if (!repo) return 0;
 
   const commitsPerPage = 10;
@@ -77,10 +78,10 @@ async function evaluateCommits(username, octokit) {
 
   let cnt = 0;
   for await (const { data: commits } of commitIterator) {
-    cnt += commits.length;
     if (cnt > MAX_COMMITS_PROCESSED) {
       break;
     }
+    cnt += commits.length;
 
     if (commitsPageURL === null) {
       commitsPageURL = commits[0].html_url;
@@ -89,7 +90,7 @@ async function evaluateCommits(username, octokit) {
     // Append all commit messages to the allMessages array after checking it is by the user
     allMessages.push(
       ...commits
-        .filter((commit) => commit.commit.author.name.toLowerCase() === username.toLowerCase())
+        .filter((commit) => commit.author !== null && commit.author.login.toLowerCase() === username.toLowerCase())
         .map((commit) => commit.commit.message),
     );
   }
@@ -115,41 +116,6 @@ async function evaluateCommits(username, octokit) {
     return response;
   }
 }
-
-
-// function calculateFinalAverage(scores) {
-//   const total = scores.reduce((acc, score) => acc + score, 0);
-//   return Math.round(total / scores.length);
-// }
-
-// Test Code for each method
-// // checkUser
-// const isUser1 = await checkUser("Kaleab-A", octokit);
-// const isUser2 = await checkUser("asdasjkdjnaskdjnaskjdnaksjn", octokit);
-
-// console.assert(isUser1 === true, "Test failed: isUser1");
-// console.assert(isUser2 === false, "Test failed: isUser2");
-
-// // getUserLargestRepo
-// const repo = await getUserLargestRepo("Kaleab-A", octokit);
-// console.assert(repo !== null, "Test failed: repo");
-
-// // getLargestRepo
-
-// // compareCommitMessages
-// const messages = [
-//   "Fixes a bug in the login page that was causing the user to be logged out.",
-//   "Updated the login page to fix a bug.",
-//   "This is a test commit message.",
-//   "Fix: Changed node version to 18.16.0 to fix a bug in custom hooks.",
-// ];
-// const score = await compareCommitMessages(messages);
-// console.log("Score: ", score);
-// console.assert(!isNaN(score), "Test failed: score is Nan");
-
-
-// const finalScore = await evaluateCommits("kaleab-a", octokit);
-// console.log("Final score: ", finalScore);
 
 
 export {evaluateCommits};
