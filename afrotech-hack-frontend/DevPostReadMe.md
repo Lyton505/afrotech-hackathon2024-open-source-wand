@@ -1,12 +1,12 @@
 ## Inspiration
-When applying for internship or jobs, only your past experience is typically considered. Your personal projects may also be considered, but only when they are unique and impactful or creative. Open source contributions are often left out of the mix in all these considerations. We believe this should not be the case because open source contributions are a key indicator of a skilled and collaborative developer. 
+When applying for internship or jobs, only your past experience is typically considered. Your personal projects may also be considered, but only when they are unique and impactful or creative. Open source contributions are often left out of the mix in all these considerations. We made Open Source Wand to help improve the software development skills of minorities in tech and help them get the recognition they deserve.
 
 Open source projects are the most accessible form of collaborative project-based work, yet 
 contributions to open source projects are often neglected. Having seen over 1,000 Black and 
 Latinx students contribute to projects like 
 [oyster](https://github.com/colorstackorg/oyster), we want to see their efforts recognized and rewarded. This is 
 where The Open Source Wand comes in: it highlights your technical talent in open source 
-development. 
+development and helps you find your next open source contribution opportunity. 
 
 ## What it does
 The Open Source Wand highlights the strengths of a contributor across five different 
@@ -27,8 +27,6 @@ A user picks a view(recruiter view or contributor view) and the time period for 
 Once we pick a repository, we evaluate only commits made by that user in the repository.
 
 
-   
-
 ## How we built it
 
 We built the Open Source Wand using various LLM apis, the Github API, ReactJS for the frontend, and Express for the backend.
@@ -39,16 +37,21 @@ Open Source Wand's functioning works in 2 stages:
 
 The 2 stages above apply for all evaluations metrics, albeit implemented differently.
 
-### 1. Open souce standards
-
-We retrieve
 
 ## Challenges we ran into
 
-- 
+- Rate limiting from the Github API and the LLM APIs
+- Ensuring the frontend and backend are properly integrated
+- Limit of context length from the LLM APIs
 
 ## Accomplishments that we're proud of
+- We built so much whilst we were busy with school
+
 
 ## What we learned
+- Learnt how to interact with LLM APIs
+- We also improved our frontend development skills
 
 ## What's next for Open Source Wand
+- Better judging algorithm
+- A fine-tuned model on commit messages and open source code
