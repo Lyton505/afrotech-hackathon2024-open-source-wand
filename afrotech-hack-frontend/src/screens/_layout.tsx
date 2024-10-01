@@ -31,7 +31,10 @@ export default function _layout() {
             </div>
 
             {/* learn more about open source text */}
-            <div className="flex flex-col gap-0 p-4 cursor-pointer">
+            <div className="flex flex-col gap-0 p-4 cursor-pointer" onClick={() => {
+                // nav to https://www.redhat.com/en/topics/open-source/what-is-open-source in new tab
+                window.open("https://www.redhat.com/en/topics/open-source/what-is-open-source", "_blank");
+            }}>
                 <FontAwesomeIcon icon={faGraduationCap} />
                 <div className="text-base align-left">Learn About Open Source</div>
                 </div>
